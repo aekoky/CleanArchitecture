@@ -1,0 +1,68 @@
+services:
+  webapi:
+    image: webapi
+    build:
+      context: WebApi
+      dockerfile: WebApi/Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - mssql
+
+  webui:
+    container_name: webui
+    build: AngularClient
+    expose:
+      - 8050:8050
+    volumes:
+      - ./AngularClient/src:/project/src
+    depends_on:
+      - webapi
+
+  kong:
+    container_name: kong
+    image: kong:3.9.0
+    restart: always
+    environment:
+      KONG_DATABASE: "off"
+      KONG_LOG_LEVEL: error
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_PROXY_LISTEN: "0.0.0.0:80"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_ADMIN_GUI_LISTEN: "0.0.0.0:8002"
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"
+      KONG_PASSWORD: LUUcvHJHv22GE7e
+    depends_on:
+      - webapi
+    healthcheck:
+      test: [ "CMD", "kong", "health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "80:80"
+      - "8001:8001"
+      - "8002:8002"
+    volumes:
+      - ./kong/config/kong.conf:/etc/kong/kong.conf
+      - ./kong/declarative/kong.yml:/etc/kong/kong.yml
+
+  mssql:
+    container_name: sql-server
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "IBrCJf9WukBbWSX"
+      MSSQL_PID: "Express"
+      MSSQL_USER: "SA"
+    expose:
+      - 1433:1433
+    ports:
+      - 1433:1433
+    volumes:
+      - ./data/mssql:/var/opt/mssql/data

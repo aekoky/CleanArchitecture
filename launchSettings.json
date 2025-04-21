@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "webapi": "StartDebugging",
+        "mssql": "StartWithoutDebugging",
+        "webui": "StartWithoutDebugging",
+        "kong": "StartWithoutDebugging"
+      }
+    }
+  }
+}
