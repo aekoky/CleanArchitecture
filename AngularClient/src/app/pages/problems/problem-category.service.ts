@@ -4,6 +4,8 @@ import { CreateProblemCategoryCommand, DeleteProblemCategoriesCommand, ProblemCa
 import { ToastType } from 'app/shared/enums/taost-type.enum';
 import { ToastService } from 'app/shared/services/toast.service';
 import { CacheService } from 'app/shared/services/cache.service';
+import { Store } from '@ngrx/store';
+import { createProblemCategory, deleteProblemCategory, updateProblemCategory } from './state-management/problems.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +14,8 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
 
     constructor(
         private readonly _problemCategoriesClient: ProblemCategoriesClient,
-        private readonly _toastService: ToastService) {
+        private readonly _toastService: ToastService,
+        private readonly _store: Store) {
         super();
     }
 
@@ -22,14 +25,19 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
                 tap({
                     next: () => {
                         this.removeCache(problemCategoryId);
-                        this._toastService.openToast("Le problème sous catégorie a été modifiée", ToastType.Success, 3000)
+                        this._toastService.openToast("Le problème sous catégorie a été modifiée", ToastType.Success, 3000);
+                        this._store.dispatch(updateProblemCategory(problemCategory));
                     },
                     error: error => this._toastService.openToast(error, ToastType.Error),
                 }),
                 map(() => problemCategory));
         else
             return this._problemCategoriesClient.create(CreateProblemCategoryCommand.fromJS(problemCategory)).pipe(tap({
-                next: (id) => this._toastService.openToast("Le problème sous catégorie a été créée", ToastType.Success, 3000),
+                next: (id) => {
+                    this._toastService.openToast("Le problème sous catégorie a été créée", ToastType.Success, 3000);
+                    problemCategory.id = id;
+                    this._store.dispatch(createProblemCategory(problemCategory));
+                },
                 error: error => this._toastService.openToast(error, ToastType.Error),
             }),
                 map((id) => {
@@ -44,21 +52,11 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
                 next: () => {
                     this.removeCache(id);
                     this._toastService.openToast("Le problème sous catégorie est supprimée avec succès", ToastType.Success, 3000)
+                    this._store.dispatch(deleteProblemCategory({ id }));
                 },
                 error: error => this._toastService.openToast(error, ToastType.Error),
             })
         );
 
-    }
-
-    deleteProblemCategories(ids: number[]): Observable<void> {
-        return this._problemCategoriesClient.deleteProblemCategories(DeleteProblemCategoriesCommand.fromJS({ ids })).pipe(tap({
-            next: () => {
-                for (const id of ids)
-                    this.removeCache(id);
-                this._toastService.openToast('Les problèmes sous catégories sont supprimées avec succès', ToastType.Success, 3000)
-            },
-            error: error => this._toastService.openToast(error, ToastType.Error),
-        }));
     }
 }

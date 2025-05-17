@@ -12,6 +12,4 @@ public class ProblemDto : IMapFrom<Problem>
     public string? Description { get; set; }
 
     public int? ProblemCategoryId { get; set; }
-
-    public ProblemCategoryDto? ProblemCategory { get; set; }
 }

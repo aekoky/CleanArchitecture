@@ -1,86 +1,86 @@
 import { createAction, props } from '@ngrx/store';
-import { EntityState } from 'app/shared/models/entity-state';
-import { ProblemCatalogDto, ProblemCategoryDto, ProblemDto } from 'app/web-api-client';
-import * as ProblemPageActions from './problems.actions';
+import { IProblemDto, IProblemCatalogDto, IProblemCategoryDto, IProblemsDto, ProblemDto } from 'app/web-api-client';
+import { IProblemsFilter } from './problems.selectors';
 
 //Problem Actions
 
-export const setProblemEntityState = createAction(
-    '[Problem Page] Set Problem Entity State',
-    props<EntityState>()
+export const openProblem = createAction(
+    '[Problems Page] Open Problem',
+    props<IProblemDto>()
 );
 
-export const resetProblemEntityState = createAction(
-    '[Problem Page] Reset Problem Entity State'
+export const deleteProblem = createAction(
+    '[Problems Page] Delete Problem',
+    props<IProblemDto>()
 );
 
-export const openProblemDialog = createAction(
-    '[Problem Page] Open Problem Dialog',
+export const deleteProblems = createAction(
+    '[Problems Page] Delete Problem',
+    props<{ ids: number[] }>()
 );
 
-export const problemDialogClosed = createAction(
-    '[Problem Page] Problem Dialog Closed',
-    props<ProblemDto>()
+export const createProblem = createAction(
+    '[Problems Page] Create Problem',
+    props<IProblemDto>()
 );
 
-export const problemDialogOpened = createAction(
-    '[Problem Page] Problem Dialog Opened',
-);
-//Problem List Actions
-
-export const setProblemListEntityState = createAction(
-    '[Problem Page] Set Problem List Entity State',
-    props<EntityState>()
+export const updateProblem = createAction(
+    '[Problems Page] Update Problem',
+    props<IProblemDto>()
 );
 
-export const resetProblemListEntityState = createAction(
-    '[Problem Page] Reset Problem List Entity State'
+//Problems Actions
+
+export const loadProblems = createAction(
+    '[Problems Page] Load Problems',
+    props<IProblemsDto>()
+);
+
+export const filterProblems = createAction(
+    '[Problems Page] Filter Problems',
+    props<IProblemsFilter>()
 );
 
 //Problem Catalog Actions
 
-export const setProblemCatalogEntityState = createAction(
-    '[Problem Page] Set Problem Catalog Entity State',
-    props<EntityState>()
+export const openProblemCatalog = createAction(
+    '[Problems Page] Open Problem Catalog',
+    props<IProblemCatalogDto>()
 );
 
-export const resetProblemCatalogEntityState = createAction(
-    '[Problem Page] Reset Problem Catalog Entity State'
+export const deleteProblemCatalog = createAction(
+    '[Problems Page] Delete Problem Catalog',
+    props<IProblemCatalogDto>()
 );
 
-export const openProblemCatalogDialog = createAction(
-    '[Problem Page] Open Problem Catalog Dialog',
+export const createProblemCatalog = createAction(
+    '[Problems Page] Create Problem Catalog',
+    props<IProblemCatalogDto>()
 );
 
-export const problemCatalogDialogClosed = createAction(
-    '[Problem Page] Problem Catalog Dialog Closed',
-    props<ProblemCatalogDto>()
-);
-
-export const problemCatalogDialogOpened = createAction(
-    '[Problem Page] Problem Catalog Dialog Opened',
+export const updateProblemCatalog = createAction(
+    '[Problems Page] Update Problem Catalog',
+    props<IProblemCatalogDto>()
 );
 
 //Problem Category Actions
 
-export const setProblemCategoryEntityState = createAction(
-    '[Problem Page] Set Problem Category Entity State',
-    props<EntityState>()
+export const openProblemCategory = createAction(
+    '[Problems Page] Open Problem Category',
+    props<IProblemCategoryDto>()
 );
 
-export const resetProblemCategoryEntityState = createAction(
-    '[Problem Page] Reset Problem Category Entity State'
+export const deleteProblemCategory = createAction(
+    '[Problems Page] Delete Problem Category',
+    props<IProblemCategoryDto>()
 );
 
-export const openProblemCategoryDialog = createAction(
-    '[Problem Page] Open Problem Dialog Category',
+export const createProblemCategory = createAction(
+    '[Problems Page] Create Problem Category',
+    props<IProblemCategoryDto>()
 );
 
-export const problemCategoryDialogClosed = createAction(
-    '[Problem Page] Problem Category Dialog Closed',
-    props<ProblemCategoryDto>()
-);
-
-export const problemCategoryDialogOpened = createAction(
-    '[Problem Page] Problem Category Dialog Opened',
+export const updateProblemCategory = createAction(
+    '[Problems Page] Update Problem Category',
+    props<IProblemCategoryDto>()
 );

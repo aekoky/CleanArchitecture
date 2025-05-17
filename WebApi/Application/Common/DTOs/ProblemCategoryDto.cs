@@ -13,5 +13,5 @@ public class ProblemCategoryDto : IMapFrom<ProblemCategory>
 
     public int? ProblemCatalogId { get; set; }
 
-    public virtual ProblemCatalogDto? ProblemCatalog { get; set; }
+    public List<ProblemDto> Problems { get; private set; } = [];
 }

@@ -3,11 +3,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ProblemCatalogDto } from 'app/web-api-client';
 import { Subject, takeUntil, tap } from 'rxjs';
 import { DialogService } from 'app/shared/services/dialog.service';
-import { ViewMode } from 'app/shared/enums/view-mode.enum';
-import { EntityState } from 'app/shared/models/entity-state';
 import { ProblemCatalogService } from '../problem-catalog.service';
 import { Store } from '@ngrx/store';
-import { selectProblemCatalogEntityState } from '../state-management/problems.selectors';
+import { problemCatalogSelector } from '../state-management/problems.selectors';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 
 @Component({
@@ -18,7 +16,6 @@ import { EntityType } from 'app/shared/enums/entity-type.enum';
 })
 export class ProblemCatalogComponent implements OnDestroy {
   private readonly _unsubscribeAll: Subject<any> = new Subject<any>();
-  private _state: EntityState;
 
   problemCatalogId: number;
   problemCatalog: ProblemCatalogDto;
@@ -33,10 +30,10 @@ export class ProblemCatalogComponent implements OnDestroy {
     private readonly _problemCatalogService: ProblemCatalogService,
     private readonly _store: Store
   ) {
-    this._store.select(selectProblemCatalogEntityState).pipe(takeUntil(this._unsubscribeAll), tap(state => this._state = state)).subscribe(state => {
-      if (state?.entity) {
-        this.problemCatalogId = state.entity.id;
-        this.problemCatalogForm.patchValue(state.entity);
+    this._store.select(problemCatalogSelector).pipe(takeUntil(this._unsubscribeAll)).subscribe(problemCatalog => {
+      if (problemCatalog) {
+        this.problemCatalogId = problemCatalog.id;
+        this.problemCatalogForm.patchValue(problemCatalog);
       }
     });
   }

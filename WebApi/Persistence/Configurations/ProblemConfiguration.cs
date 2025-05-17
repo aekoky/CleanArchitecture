@@ -16,11 +16,5 @@ public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
             .IsRequired();
 
         builder.Property(e => e.Description).HasMaxLength(1500);
-
-        builder.HasOne(d => d.ProblemCategory)
-            .WithMany()
-            .HasForeignKey(d => d.ProblemCategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
-
     }
 }

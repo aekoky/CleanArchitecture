@@ -49,7 +49,7 @@ namespace Persistence.Migrations.Application
                         column: x => x.ProblemCatalogId,
                         principalTable: "ProblemCatalog",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,7 +73,7 @@ namespace Persistence.Migrations.Application
                         column: x => x.ProblemCategoryId,
                         principalTable: "ProblemCategory",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

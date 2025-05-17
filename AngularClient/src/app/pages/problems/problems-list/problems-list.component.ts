@@ -6,14 +6,14 @@ import { BehaviorSubject, Observable, Subject, combineLatestWith, debounceTime, 
 import { DialogService } from 'app/shared/services/dialog.service';
 import { ViewMode } from 'app/shared/enums/view-mode.enum';
 import { EntityState } from 'app/shared/models/entity-state';
-import { MatDialogRef } from '@angular/material/dialog';
 import { ProblemService } from '../problem.service';
 import { ProblemTreeService } from '../problem-tree.service';
 import { NodeLevel, TreeNode } from 'app/shared/modules/tree/tree.model';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { Store } from '@ngrx/store';
-import { resetProblemEntityState, setProblemEntityState } from '../state-management/problems.actions';
-import { selectProblemListEntityState } from '../state-management/problems.selectors';
+import { problemsSelector } from '../state-management/problems.selectors';
+import { deleteProblem, deleteProblems, filterProblems, loadProblems, openProblem } from '../state-management/problems.actions';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-problems-list',
@@ -26,8 +26,6 @@ export class ProblemsListComponent implements OnDestroy {
   NodeLevel = NodeLevel;
   SelectionType = SelectionType;
   ViewMode = ViewMode;
-  private readonly _unsubscribeAll: Subject<any> = new Subject<any>();
-  private readonly _problems$ = new BehaviorSubject<ProblemDto[]>([]);
   problems$: Observable<ProblemDto[]>;
   selectedProblems = new Array<ProblemDto>();
   selectedNodes = new BehaviorSubject<TreeNode[]>([]);
@@ -43,100 +41,58 @@ export class ProblemsListComponent implements OnDestroy {
     public problemTreeService: ProblemTreeService,
     private readonly _store: Store
   ) {
-    _store.select(selectProblemListEntityState).pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(state => {
-        this.state = state;
-        if (state?.filters)
-          this.filtersForm.patchValue(state.filters);
-        else
-          this.filtersForm.reset();
-
-        this.problems$ = this._problems$.pipe(
-          combineLatestWith(
-            this.filtersForm.controls.keyword.valueChanges.pipe(
-              takeUntil(this._unsubscribeAll),
-              startWith(this.filtersForm.controls.keyword.value),
-              debounceTime(250),
-              distinctUntilChanged())),
-          map(([problems, keyword]) => {
-            if (keyword != null)
-              problems = problems.filter(problem =>
-                problem?.description?.toLocaleLowerCase()?.includes(keyword?.toLocaleLowerCase()) ||
-                problem?.name?.toLocaleLowerCase()?.includes(keyword?.toLocaleLowerCase()));
-            return problems;
-          }));
-        this.getProblem();
-      });
-
-    this.selectedNodes.pipe(
-      takeUntil(this._unsubscribeAll),
+    const filterKeyword$ = this.filtersForm.controls.keyword.valueChanges.pipe(
+      startWith(this.filtersForm.controls.keyword.value),
+      debounceTime(250),
+      distinctUntilChanged(),
+      takeUntilDestroyed());
+    const selectedNodes$ = this.selectedNodes.pipe(
+      takeUntilDestroyed(),
       map(selectedNodes => {
         const categories = selectedNodes.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Category).map(selectedNode => selectedNode.id);
         const catalogs = selectedNodes.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Catalog).map(selectedNode => selectedNode.id);
         return { categories, catalogs };
-      }),
-      switchMap(filters => this.problemService.getProblemsByCategory(filters.categories, filters.catalogs)))
-      .subscribe(this._problems$);
+      }));
+
+    this.problems$ = _store.select(problemsSelector).pipe(
+      filter(problems => !!problems?.problems),
+      combineLatestWith(filterKeyword$, selectedNodes$),
+      takeUntilDestroyed(),
+      map(([problems, keyword, selectedNodes]) => {
+        var filtredProblems = problems?.problems;
+        if (keyword != null)
+          filtredProblems = filtredProblems.filter(problem =>
+            problem?.description?.toLocaleLowerCase()?.includes(keyword?.toLocaleLowerCase()) ||
+            problem?.name?.toLocaleLowerCase()?.includes(keyword?.toLocaleLowerCase()));
+        if (selectedNodes?.catalogs?.length || selectedNodes?.categories?.length)
+          filtredProblems = filtredProblems.filter(problem => problem.problemCategoryId).filter(problem =>
+            selectedNodes.categories?.includes(problem.problemCategoryId) ||
+            problems.problemCategories.filter(problemCategory => selectedNodes.catalogs.includes(problemCategory.problemCatalogId))
+              .map(problemCategory => problemCategory.id).includes(problem.problemCategoryId));
+        return filtredProblems;
+      }));
+    this.problemService.getProblems().subscribe(problems => this._store.dispatch(loadProblems(problems)));
   }
 
   ngOnDestroy(): void {
-    this._unsubscribeAll.next(null);
-    this._unsubscribeAll.complete();
+    this.selectedNodes.complete();
   }
 
   openProblemDialog(problemDto?: ProblemDto): void {
-    var dialogObservable: Observable<MatDialogRef<any, any>>;
-    if (problemDto) {
-      this._store.dispatch(setProblemEntityState({
-        viewMode: ViewMode.Dialog, entity: problemDto
-      }));
-      dialogObservable = this._dialogService.dialog(EntityType.Problem);
-    }
-    else {
-      this._store.dispatch(resetProblemEntityState());
-      dialogObservable = this._dialogService.dialog(EntityType.Problem);
-    }
-    dialogObservable.pipe(
-      switchMap(matDialogRef => matDialogRef.afterClosed()),
-      filter(problem => !!problem?.id),
-      withLatestFrom(this._problems$))
-      .subscribe(([savedProblem, problems]) => {
-        const problemIndex = problems.findIndex(problem => problem.id === savedProblem?.id);
-        if (problemIndex !== -1)
-          problems[problemIndex] = savedProblem;
-        else
-          problems.push(savedProblem);
-        this._problems$.next([...problems]);
-      });
+    this._store.dispatch(openProblem(problemDto));
+    this._dialogService.dialog(EntityType.Problem).pipe(
+      switchMap(matDialogRef => matDialogRef.afterClosed()))
+      .subscribe();
   }
 
   deleteProblem(problemId: number) {
-    this.problemService.deleteProblem(problemId).pipe(
-      switchMap(() => this._problems$.pipe(take(1)))
-    ).subscribe(
-      (problems) => {
-        const problemIndex = problems.findIndex(problem => problem.id === problemId);
-        if (problemIndex !== -1)
-          problems.splice(problemIndex, 1);
-        this._problems$.next(problems);
-      });
+    this.problemService.deleteProblem(problemId).subscribe();
   }
 
   deleteProblems() {
     const selectedProblemsIds = this.selectedProblems.map(problem => problem.id);
     if (selectedProblemsIds?.length)
-      this.problemService.deleteProblems(selectedProblemsIds).subscribe(() => {
-        this._problems$.pipe(take(1)).subscribe(
-          (problems) => {
-            problems = problems.filter(problem => !selectedProblemsIds.includes(problem.id));
-            this.selectedProblems = [];
-            this._problems$.next(problems);
-          });
-      });
-  }
-
-  getProblem() {
-    this.problemService.getProblems().subscribe(problems => this._problems$.next(problems));
+      this.problemService.deleteProblems(selectedProblemsIds).subscribe(() => this._store.dispatch(deleteProblems({ ids: selectedProblemsIds })));
   }
 
   onActivate(event) {

@@ -4,9 +4,9 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideStore } from '@ngrx/store';
-import { problemPageStateReducer } from './pages/problems/state-management/problems.reducer';
 import { provideHttpClient } from '@angular/common/http';
 import { API_BASE_URL } from './web-api-client';
+import { problemCatalogReducer, problemCategoryReducer, problemReducer, problemsFilterReducer, problemsReducer } from './pages/problems/state-management/problems.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    provideStore({ problemPageState: problemPageStateReducer }),
+    provideStore({ problems: problemsReducer, problemsFilter: problemsFilterReducer, problem: problemReducer, problemCatalog: problemCatalogReducer, problemCategory: problemCategoryReducer }),
     {
       provide: API_BASE_URL,
       useValue: "/api"

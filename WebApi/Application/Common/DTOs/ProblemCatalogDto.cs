@@ -11,6 +11,5 @@ public class ProblemCatalogDto : IMapFrom<ProblemCatalog>
 
     public string? Description { get; set; }
 
-    public List<ProblemCategoryDto> Categories { get; private set; } = [];
-
+    public List<ProblemCategory> ProblemCategories { get; set; } = [];
 }

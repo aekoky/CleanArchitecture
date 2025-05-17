@@ -1,22 +1,13 @@
-﻿using CleanArchitecture.Application.Application.ProblemCategories.Queries.GetProblemCategoriesFiltered;
-using CleanArchitecture.Application.Application.ProblemCategories.Commands.DeleteProblemCategories;
+﻿using CleanArchitecture.Application.Application.ProblemCategories.Commands.DeleteProblemCategories;
 using CleanArchitecture.Application.Application.ProblemCategories.Commands.DeleteProblemCategory;
 using CleanArchitecture.Application.Application.ProblemCategories.Commands.CreateProblemCategory;
 using CleanArchitecture.Application.Application.ProblemCategories.Commands.UpdateProblemCategory;
-using CleanArchitecture.Application.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.WebApi.Controllers;
 
 public class ProblemCategoriesController : ApiControllerBase
 {
-
-    [HttpGet("filtred")]
-    public async Task<ActionResult<List<ProblemCategoryDto>>> GetProblemCategoriesFiltered([FromQuery] GetProblemCategoriesFilteredQuery query, CancellationToken cancellationToken)
-    {
-        return await Mediator.Send(query, cancellationToken);
-    }
-
     [HttpPost]
     public async Task<ActionResult<int>> Create(CreateProblemCategoryCommand command, CancellationToken cancellationToken)
     {

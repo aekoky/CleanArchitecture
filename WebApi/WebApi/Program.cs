@@ -37,9 +37,12 @@ if (app.Environment.IsDevelopment())
 
 // Initialise and seed database
 using var scope = app.Services.CreateScope();
-var initialiserMultiTenant = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-await initialiserMultiTenant.InitialiseAsync();
-await initialiserMultiTenant.SeedAsync();
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NSwag")))
+{
+    var initialiserMultiTenant = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+    await initialiserMultiTenant.InitialiseAsync();
+    await initialiserMultiTenant.SeedAsync();
+}
 
 app.UseHealthChecks("/health");
 app.UseStaticFiles();

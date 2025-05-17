@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Persistence.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250421135952_Initial")]
+    [Migration("20250512221140_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -130,22 +130,28 @@ namespace Persistence.Migrations.Application
 
             modelBuilder.Entity("CleanArchitecture.Domain.Entities.Problem", b =>
                 {
-                    b.HasOne("CleanArchitecture.Domain.Entities.ProblemCategory", "ProblemCategory")
-                        .WithMany()
+                    b.HasOne("CleanArchitecture.Domain.Entities.ProblemCategory", null)
+                        .WithMany("Problems")
                         .HasForeignKey("ProblemCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("ProblemCategory");
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CleanArchitecture.Domain.Entities.ProblemCategory", b =>
                 {
-                    b.HasOne("CleanArchitecture.Domain.Entities.ProblemCatalog", "ProblemCatalog")
-                        .WithMany()
+                    b.HasOne("CleanArchitecture.Domain.Entities.ProblemCatalog", null)
+                        .WithMany("ProblemCategories")
                         .HasForeignKey("ProblemCatalogId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
 
-                    b.Navigation("ProblemCatalog");
+            modelBuilder.Entity("CleanArchitecture.Domain.Entities.ProblemCatalog", b =>
+                {
+                    b.Navigation("ProblemCategories");
+                });
+
+            modelBuilder.Entity("CleanArchitecture.Domain.Entities.ProblemCategory", b =>
+                {
+                    b.Navigation("Problems");
                 });
 #pragma warning restore 612, 618
         }

@@ -32,7 +32,7 @@ export class ProblemCatalogsClient implements IProblemCatalogsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "";
+        this.baseUrl = baseUrl ?? "/api";
     }
 
     create(command: CreateProblemCatalogCommand): Observable<number> {
@@ -249,7 +249,6 @@ export class ProblemCatalogsClient implements IProblemCatalogsClient {
 }
 
 export interface IProblemCategoriesClient {
-    getProblemCategoriesFiltered(keyword?: string | null | undefined, problemCatalogId?: number | null | undefined): Observable<ProblemCategoryDto[]>;
     create(command: CreateProblemCategoryCommand): Observable<number>;
     deleteProblemCategories(deleteProblemCategoriesCommand: DeleteProblemCategoriesCommand): Observable<void>;
     update(id: number, command: UpdateProblemCategoryCommand): Observable<void>;
@@ -266,66 +265,7 @@ export class ProblemCategoriesClient implements IProblemCategoriesClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    getProblemCategoriesFiltered(keyword?: string | null | undefined, problemCatalogId?: number | null | undefined): Observable<ProblemCategoryDto[]> {
-        let url_ = this.baseUrl + "/ProblemCategories/filtred?";
-        if (keyword !== undefined && keyword !== null)
-            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
-        if (problemCatalogId !== undefined && problemCatalogId !== null)
-            url_ += "ProblemCatalogId=" + encodeURIComponent("" + problemCatalogId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProblemCategoriesFiltered(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetProblemCategoriesFiltered(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProblemCategoryDto[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ProblemCategoryDto[]>;
-        }));
-    }
-
-    protected processGetProblemCategoriesFiltered(response: HttpResponseBase): Observable<ProblemCategoryDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ProblemCategoryDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
+        this.baseUrl = baseUrl ?? "/api";
     }
 
     create(command: CreateProblemCategoryCommand): Observable<number> {
@@ -542,12 +482,9 @@ export class ProblemCategoriesClient implements IProblemCategoriesClient {
 }
 
 export interface IProblemsClient {
-    getProblems(query?: GetAllProblemsQuery | undefined): Observable<ProblemDto[]>;
+    getProblems(query?: GetProblemsQuery | undefined): Observable<ProblemsDto>;
     create(command: CreateProblemCommand): Observable<number>;
     deleteProblems(deleteProblemsCommand: DeleteProblemsCommand): Observable<void>;
-    getProblemSuggestions(keyword?: string | null | undefined, problemCategoryId?: number | null | undefined, includedProblems?: number[] | undefined): Observable<ProblemDto[]>;
-    getProblemCatalogs(): Observable<ProblemCategoriesDto>;
-    getProblemsByCategory(problemCategoryIds?: number[] | null | undefined, problemCatalogIds?: number[] | null | undefined): Observable<ProblemDto[]>;
     update(id: number, command: UpdateProblemCommand): Observable<void>;
     delete(id: number): Observable<void>;
 }
@@ -562,10 +499,10 @@ export class ProblemsClient implements IProblemsClient {
 
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
-        this.baseUrl = baseUrl ?? "";
+        this.baseUrl = baseUrl ?? "/api";
     }
 
-    getProblems(query?: GetAllProblemsQuery | undefined): Observable<ProblemDto[]> {
+    getProblems(query?: GetProblemsQuery | undefined): Observable<ProblemsDto> {
         let url_ = this.baseUrl + "/Problems?";
         if (query === null)
             throw new Error("The parameter 'query' cannot be null.");
@@ -588,14 +525,14 @@ export class ProblemsClient implements IProblemsClient {
                 try {
                     return this.processGetProblems(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProblemDto[]>;
+                    return _observableThrow(e) as any as Observable<ProblemsDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ProblemDto[]>;
+                return _observableThrow(response_) as any as Observable<ProblemsDto>;
         }));
     }
 
-    protected processGetProblems(response: HttpResponseBase): Observable<ProblemDto[]> {
+    protected processGetProblems(response: HttpResponseBase): Observable<ProblemsDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -606,14 +543,7 @@ export class ProblemsClient implements IProblemsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ProblemDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = ProblemsDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -725,176 +655,6 @@ export class ProblemsClient implements IProblemsClient {
             return throwException("A server side error occurred.", status, _responseText, _headers, resultdefault);
             }));
         }
-    }
-
-    getProblemSuggestions(keyword?: string | null | undefined, problemCategoryId?: number | null | undefined, includedProblems?: number[] | undefined): Observable<ProblemDto[]> {
-        let url_ = this.baseUrl + "/Problems/suggestions?";
-        if (keyword !== undefined && keyword !== null)
-            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
-        if (problemCategoryId !== undefined && problemCategoryId !== null)
-            url_ += "ProblemCategoryId=" + encodeURIComponent("" + problemCategoryId) + "&";
-        if (includedProblems === null)
-            throw new Error("The parameter 'includedProblems' cannot be null.");
-        else if (includedProblems !== undefined)
-            includedProblems && includedProblems.forEach(item => { url_ += "IncludedProblems=" + encodeURIComponent("" + item) + "&"; });
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProblemSuggestions(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetProblemSuggestions(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProblemDto[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ProblemDto[]>;
-        }));
-    }
-
-    protected processGetProblemSuggestions(response: HttpResponseBase): Observable<ProblemDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ProblemDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    getProblemCatalogs(): Observable<ProblemCategoriesDto> {
-        let url_ = this.baseUrl + "/Problems/categories";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProblemCatalogs(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetProblemCatalogs(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProblemCategoriesDto>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ProblemCategoriesDto>;
-        }));
-    }
-
-    protected processGetProblemCatalogs(response: HttpResponseBase): Observable<ProblemCategoriesDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ProblemCategoriesDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    getProblemsByCategory(problemCategoryIds?: number[] | null | undefined, problemCatalogIds?: number[] | null | undefined): Observable<ProblemDto[]> {
-        let url_ = this.baseUrl + "/Problems/filtred?";
-        if (problemCategoryIds !== undefined && problemCategoryIds !== null)
-            problemCategoryIds && problemCategoryIds.forEach(item => { url_ += "ProblemCategoryIds=" + encodeURIComponent("" + item) + "&"; });
-        if (problemCatalogIds !== undefined && problemCatalogIds !== null)
-            problemCatalogIds && problemCatalogIds.forEach(item => { url_ += "ProblemCatalogIds=" + encodeURIComponent("" + item) + "&"; });
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProblemsByCategory(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetProblemsByCategory(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ProblemDto[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ProblemDto[]>;
-        }));
-    }
-
-    protected processGetProblemsByCategory(response: HttpResponseBase): Observable<ProblemDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ProblemDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
     }
 
     update(id: number, command: UpdateProblemCommand): Observable<void> {
@@ -1215,114 +975,6 @@ export interface IDeleteProblemCatalogsCommand {
     ids?: number[];
 }
 
-export class ProblemCategoryDto implements IProblemCategoryDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    problemCatalogId?: number | undefined;
-    problemCatalog?: ProblemCatalogDto | undefined;
-
-    constructor(data?: IProblemCategoryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.description = _data["description"];
-            this.problemCatalogId = _data["problemCatalogId"];
-            this.problemCatalog = _data["problemCatalog"] ? ProblemCatalogDto.fromJS(_data["problemCatalog"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ProblemCategoryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemCategoryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["description"] = this.description;
-        data["problemCatalogId"] = this.problemCatalogId;
-        data["problemCatalog"] = this.problemCatalog ? this.problemCatalog.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IProblemCategoryDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    problemCatalogId?: number | undefined;
-    problemCatalog?: ProblemCatalogDto | undefined;
-}
-
-export class ProblemCatalogDto implements IProblemCatalogDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    categories?: ProblemCategoryDto[];
-
-    constructor(data?: IProblemCatalogDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.description = _data["description"];
-            if (Array.isArray(_data["categories"])) {
-                this.categories = [] as any;
-                for (let item of _data["categories"])
-                    this.categories!.push(ProblemCategoryDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ProblemCatalogDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemCatalogDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["description"] = this.description;
-        if (Array.isArray(this.categories)) {
-            data["categories"] = [];
-            for (let item of this.categories)
-                data["categories"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IProblemCatalogDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    categories?: ProblemCategoryDto[];
-}
-
 export class CreateProblemCategoryCommand implements ICreateProblemCategoryCommand {
     name!: string;
     description?: string | undefined;
@@ -1459,93 +1111,12 @@ export interface IDeleteProblemCategoriesCommand {
     ids?: number[];
 }
 
-export class ProblemDto implements IProblemDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    problemCategoryId?: number | undefined;
-    problemCategory?: ProblemCategoryDto | undefined;
-
-    constructor(data?: IProblemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.description = _data["description"];
-            this.problemCategoryId = _data["problemCategoryId"];
-            this.problemCategory = _data["problemCategory"] ? ProblemCategoryDto.fromJS(_data["problemCategory"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ProblemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["description"] = this.description;
-        data["problemCategoryId"] = this.problemCategoryId;
-        data["problemCategory"] = this.problemCategory ? this.problemCategory.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IProblemDto {
-    id?: number;
-    name?: string;
-    description?: string | undefined;
-    problemCategoryId?: number | undefined;
-    problemCategory?: ProblemCategoryDto | undefined;
-}
-
-export class GetAllProblemsQuery implements IGetAllProblemsQuery {
-
-    constructor(data?: IGetAllProblemsQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): GetAllProblemsQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetAllProblemsQuery();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IGetAllProblemsQuery {
-}
-
-export class ProblemCategoriesDto implements IProblemCategoriesDto {
+export class ProblemsDto implements IProblemsDto {
     problemCatalogs?: ProblemCatalogDto[];
     problemCategories?: ProblemCategoryDto[];
+    problems?: ProblemDto[];
 
-    constructor(data?: IProblemCategoriesDto) {
+    constructor(data?: IProblemsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1566,12 +1137,17 @@ export class ProblemCategoriesDto implements IProblemCategoriesDto {
                 for (let item of _data["problemCategories"])
                     this.problemCategories!.push(ProblemCategoryDto.fromJS(item));
             }
+            if (Array.isArray(_data["problems"])) {
+                this.problems = [] as any;
+                for (let item of _data["problems"])
+                    this.problems!.push(ProblemDto.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): ProblemCategoriesDto {
+    static fromJS(data: any): ProblemsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ProblemCategoriesDto();
+        let result = new ProblemsDto();
         result.init(data);
         return result;
     }
@@ -1588,13 +1164,420 @@ export class ProblemCategoriesDto implements IProblemCategoriesDto {
             for (let item of this.problemCategories)
                 data["problemCategories"].push(item.toJSON());
         }
+        if (Array.isArray(this.problems)) {
+            data["problems"] = [];
+            for (let item of this.problems)
+                data["problems"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IProblemCategoriesDto {
+export interface IProblemsDto {
     problemCatalogs?: ProblemCatalogDto[];
     problemCategories?: ProblemCategoryDto[];
+    problems?: ProblemDto[];
+}
+
+export class ProblemCatalogDto implements IProblemCatalogDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCategories?: ProblemCategory[];
+
+    constructor(data?: IProblemCatalogDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            if (Array.isArray(_data["problemCategories"])) {
+                this.problemCategories = [] as any;
+                for (let item of _data["problemCategories"])
+                    this.problemCategories!.push(ProblemCategory.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ProblemCatalogDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemCatalogDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        if (Array.isArray(this.problemCategories)) {
+            data["problemCategories"] = [];
+            for (let item of this.problemCategories)
+                data["problemCategories"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IProblemCatalogDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCategories?: ProblemCategory[];
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[];
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(BaseEvent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBaseEntity {
+    id?: number;
+    domainEvents?: BaseEvent[];
+}
+
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static override fromJS(data: any): BaseAuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+}
+
+export class ProblemCategory extends BaseAuditableEntity implements IProblemCategory {
+    name?: string;
+    description?: string | undefined;
+    problemCatalogId?: number | undefined;
+    problems?: Problem[];
+
+    constructor(data?: IProblemCategory) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.problemCatalogId = _data["problemCatalogId"];
+            if (Array.isArray(_data["problems"])) {
+                this.problems = [] as any;
+                for (let item of _data["problems"])
+                    this.problems!.push(Problem.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): ProblemCategory {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemCategory();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["problemCatalogId"] = this.problemCatalogId;
+        if (Array.isArray(this.problems)) {
+            data["problems"] = [];
+            for (let item of this.problems)
+                data["problems"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IProblemCategory extends IBaseAuditableEntity {
+    name?: string;
+    description?: string | undefined;
+    problemCatalogId?: number | undefined;
+    problems?: Problem[];
+}
+
+export class Problem extends BaseAuditableEntity implements IProblem {
+    name?: string;
+    description?: string | undefined;
+    problemCategoryId?: number | undefined;
+
+    constructor(data?: IProblem) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.problemCategoryId = _data["problemCategoryId"];
+        }
+    }
+
+    static override fromJS(data: any): Problem {
+        data = typeof data === 'object' ? data : {};
+        let result = new Problem();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["problemCategoryId"] = this.problemCategoryId;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IProblem extends IBaseAuditableEntity {
+    name?: string;
+    description?: string | undefined;
+    problemCategoryId?: number | undefined;
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
+}
+
+export class ProblemCategoryDto implements IProblemCategoryDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCatalogId?: number | undefined;
+    problems?: ProblemDto[];
+
+    constructor(data?: IProblemCategoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.problemCatalogId = _data["problemCatalogId"];
+            if (Array.isArray(_data["problems"])) {
+                this.problems = [] as any;
+                for (let item of _data["problems"])
+                    this.problems!.push(ProblemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ProblemCategoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemCategoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["problemCatalogId"] = this.problemCatalogId;
+        if (Array.isArray(this.problems)) {
+            data["problems"] = [];
+            for (let item of this.problems)
+                data["problems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IProblemCategoryDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCatalogId?: number | undefined;
+    problems?: ProblemDto[];
+}
+
+export class ProblemDto implements IProblemDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCategoryId?: number | undefined;
+
+    constructor(data?: IProblemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.problemCategoryId = _data["problemCategoryId"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["problemCategoryId"] = this.problemCategoryId;
+        return data;
+    }
+}
+
+export interface IProblemDto {
+    id?: number;
+    name?: string;
+    description?: string | undefined;
+    problemCategoryId?: number | undefined;
+}
+
+export class GetProblemsQuery implements IGetProblemsQuery {
+
+    constructor(data?: IGetProblemsQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): GetProblemsQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetProblemsQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IGetProblemsQuery {
 }
 
 export class CreateProblemCommand implements ICreateProblemCommand {

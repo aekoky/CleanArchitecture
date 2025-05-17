@@ -7,7 +7,4 @@ public class Problem : BaseAuditableEntity
     public string? Description { get; set; }
 
     public int? ProblemCategoryId { get; set; }
-
-    public ProblemCategory? ProblemCategory { get; set; }
-
 }

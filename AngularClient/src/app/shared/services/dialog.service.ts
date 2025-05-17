@@ -22,7 +22,6 @@ export class DialogService {
     public dialog(type: EntityType): Observable<MatDialogRef<any>> {
         let dialogComponent: Promise<ComponentType<any>>;
         switch (type) {
-
             case EntityType.Problem:
                 dialogComponent = import('app/pages/problems/problems.module')
                     .then(m => m.ProblemsModule)

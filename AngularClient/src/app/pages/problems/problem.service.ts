@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { filter, map, Observable, of, switchMap, tap } from 'rxjs';
-import { CreateProblemCommand, DeleteProblemsCommand, ProblemCategoriesDto, ProblemDto, ProblemsClient, UpdateProblemCommand } from 'app/web-api-client';
+import { map, Observable, tap } from 'rxjs';
+import { CreateProblemCommand, DeleteProblemsCommand, ProblemDto, ProblemsClient, ProblemsDto, UpdateProblemCommand } from 'app/web-api-client';
 import { ToastType } from 'app/shared/enums/taost-type.enum';
 import { ToastService } from 'app/shared/services/toast.service';
 import { CacheService } from 'app/shared/services/cache.service';
+import { Store } from '@ngrx/store';
+import { createProblem, deleteProblem, deleteProblems, updateProblem } from './state-management/problems.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +14,8 @@ export class ProblemService extends CacheService<ProblemDto> {
 
     constructor(
         private readonly _problemsClient: ProblemsClient,
-        private readonly _toastService: ToastService) {
+        private readonly _toastService: ToastService,
+        private readonly _store: Store) {
         super();
     }
 
@@ -23,7 +26,9 @@ export class ProblemService extends CacheService<ProblemDto> {
                     {
                         next: () => {
                             this.removeCache(problemId);
-                            this._toastService.openToast('Le problème a été modifié', ToastType.Success, 3000)
+                            this._toastService.openToast('Le problème a été modifié', ToastType.Success, 3000);
+                            this._store.dispatch(updateProblem(problem));
+
                         },
                         error: error => this._toastService.openToast(error, ToastType.Error)
                     }
@@ -32,7 +37,10 @@ export class ProblemService extends CacheService<ProblemDto> {
         else
             return this._problemsClient.create(CreateProblemCommand.fromJS(problem)).pipe(tap(
                 {
-                    next: (id) => this._toastService.openToast('Le problème a été créé', ToastType.Success, 3000),
+                    next: (id) => {
+                        this._toastService.openToast('Le problème a été créé', ToastType.Success, 3000);
+                        this._store.dispatch(createProblem(problem));
+                    },
                     error: error => this._toastService.openToast(error, ToastType.Error),
                 }),
                 map((id) => {
@@ -41,15 +49,8 @@ export class ProblemService extends CacheService<ProblemDto> {
                 }));
     }
 
-    getProblems(): Observable<ProblemDto[]> {
+    getProblems(): Observable<ProblemsDto> {
         return this._problemsClient.getProblems();
-    }
-
-    getProblemCatalogs(): Observable<ProblemCategoriesDto> {
-        return this._problemsClient.getProblemCatalogs();
-    }
-    getProblemsByCategory(problemCategoryIds?: number[], problemCatalogIds?: number[]): Observable<ProblemDto[]> {
-        return this._problemsClient.getProblemsByCategory(problemCategoryIds, problemCatalogIds);
     }
 
     deleteProblem(id: number): Observable<void> {
@@ -57,7 +58,8 @@ export class ProblemService extends CacheService<ProblemDto> {
             tap({
                 next: () => {
                     this.removeCache(id);
-                    this._toastService.openToast('Le problème est supprimé avec succès', ToastType.Success, 3000)
+                    this._toastService.openToast('Le problème est supprimé avec succès', ToastType.Success, 3000);
+                    this._store.dispatch(deleteProblem({ id }));
                 },
                 error: error => this._toastService.openToast(error, ToastType.Error),
             })
@@ -72,13 +74,10 @@ export class ProblemService extends CacheService<ProblemDto> {
                         for (const id of ids)
                             this.removeCache(id);
                         this._toastService.openToast('Les problèmes sont supprimés avec succès', ToastType.Success, 3000)
+                        this._store.dispatch(deleteProblems({ ids }));
                     },
                     error: error => this._toastService.openToast(error, ToastType.Error),
                 }
             ));
     }
 }
-function tao(): import("rxjs").OperatorFunction<void, ProblemDto> {
-    throw new Error('Function not implemented.');
-}
-

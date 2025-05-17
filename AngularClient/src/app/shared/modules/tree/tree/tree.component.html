@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-between h-full w-full">
+<div class="flex flex-col justify-between max-h-full w-full">
     <div class="flex grow w-full overflow-auto">
         <mat-tree class="grow m-2" #tree [dataSource]="nodes | async" [childrenAccessor]="childrenAccessor"
             [expansionKey]="expansionKeyFn">

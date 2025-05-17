@@ -8,5 +8,5 @@ public class ProblemCategory : BaseAuditableEntity
 
     public int? ProblemCatalogId { get; set; }
 
-    public virtual ProblemCatalog? ProblemCatalog { get; set; }
+    public virtual List<Problem> Problems { get; set; } = [];
 }

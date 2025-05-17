@@ -16,5 +16,10 @@ public class ProblemCatalogConfiguration : IEntityTypeConfiguration<ProblemCatal
             .IsRequired();
 
         builder.Property(e => e.Description).HasMaxLength(1500);
+
+        builder.HasMany(e => e.ProblemCategories)
+            .WithOne()
+            .HasForeignKey(e => e.ProblemCatalogId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

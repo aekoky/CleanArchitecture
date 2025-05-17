@@ -28,7 +28,7 @@
         <mat-sidenav-container class="flex w-full h-full gap-4" autosize>
             <mat-sidenav #drawer [opened]="true" [mode]="'side'"
                 class="w-full md:min-w-72 max-w-full md:max-w-sm dark:bg-gray-900 h-full bg-transparent px-4">
-                <div class="dark:bg-gray-900 w-full h-full bg-white overflow-hidden shadow rounded-lg border">
+                <div class="dark:bg-gray-900 w-full h-full bg-white overflow-hidden">
                     <div class="flex flex-col h-full">
 
                         <!-- Close button -->
@@ -54,7 +54,7 @@
                     <ngx-datatable class="material grow" [rows]="problems$ | async" [rowIdentity]="getId"
                         [columnMode]="ColumnMode.standard" [selectionType]="SelectionType.checkbox"
                         [selectAllRowsOnPage]="true" [selected]="selectedProblems" [headerHeight]="50"
-                        [scrollbarV]="true" [footerHeight]="50" [rowHeight]="50" (activate)="onActivate($event)"
+                        [scrollbarV]="true" [footerHeight]="60" [rowHeight]="70" (activate)="onActivate($event)"
                         appColumnMode>
                         <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false"
                             [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true"
@@ -73,14 +73,17 @@
                             [flexGrow]="1">
                             <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
                                 <ng-container *ngIf="row.problemCategory?.id">
-                                    <ng-container *ngIf="row.problemCategory?.problemCatalog?.id">
-                                        <span
-                                            class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.problemCatalog?.name}}
+                                    <div class="h-[50px] flex min-h-4 px-2 items-center">
+                                        <ng-container *ngIf="row.problemCategory?.problemCatalog?.id">
+                                            <span
+                                                class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.problemCatalog?.name}}
+                                                /
+                                            </span>
+
+                                        </ng-container>
+                                        <span class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.name}}
                                         </span>
-                                        /
-                                    </ng-container>
-                                    <span class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.name}}
-                                    </span>
+                                    </div>
                                 </ng-container>
                             </ng-template>
                         </ngx-datatable-column>

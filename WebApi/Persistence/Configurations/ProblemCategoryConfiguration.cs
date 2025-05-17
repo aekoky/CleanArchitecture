@@ -17,9 +17,9 @@ public class ProblemCategoryConfiguration : IEntityTypeConfiguration<ProblemCate
 
         builder.Property(e => e.Description).HasMaxLength(1500);
 
-        builder.HasOne(d => d.ProblemCatalog)
-            .WithMany()
-            .HasForeignKey(d => d.ProblemCatalogId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(e => e.Problems)
+            .WithOne()
+            .HasForeignKey(e => e.ProblemCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

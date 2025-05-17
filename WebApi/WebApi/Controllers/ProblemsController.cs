@@ -1,13 +1,10 @@
-﻿using CleanArchitecture.Application.Application.Problems.Queries.GetProblemSuggestions;
-using CleanArchitecture.Application.Application.Problems.Commands.DeleteProblems;
+﻿using CleanArchitecture.Application.Application.Problems.Commands.DeleteProblems;
 using CleanArchitecture.Application.Application.Problems.Commands.DeleteProblem;
 using CleanArchitecture.Application.Application.Problems.Commands.CreateProblem;
 using CleanArchitecture.Application.Application.Problems.Commands.UpdateProblem;
+using CleanArchitecture.Application.Application.Problems.Queries.GetProblems;
 using CleanArchitecture.Application.Common.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using CleanArchitecture.Application.Application.ProblemCatalogs.Queries.GetAllProblemCatalogs;
-using CleanArchitecture.Application.Application.Problems.Queries.GetAllProblems;
-using CleanArchitecture.Application.Application.Problems.Queries.GetProblemsByCategory;
 
 namespace CleanArchitecture.WebApi.Controllers;
 
@@ -15,25 +12,7 @@ public class ProblemsController : ApiControllerBase
 {
 
     [HttpGet]
-    public async Task<ActionResult<IList<ProblemDto>>> GetProblems([FromQuery] GetAllProblemsQuery query, CancellationToken cancellationToken)
-    {
-        return Ok(await Mediator.Send(query, cancellationToken));
-    }
-
-    [HttpGet("suggestions")]
-    public async Task<ActionResult<ICollection<ProblemDto>>> GetProblemSuggestions([FromQuery] GetProblemSuggestionsQuery query, CancellationToken cancellationToken)
-    {
-        return Ok(await Mediator.Send(query, cancellationToken));
-    }
-
-    [HttpGet("categories")]
-    public async Task<ActionResult<ProblemCategoriesDto>> GetProblemCatalogs(CancellationToken cancellationToken)
-    {
-        return await Mediator.Send(new GetProblemCatalogsQuery(), cancellationToken);
-    }
-
-    [HttpGet("filtred")]
-    public async Task<ActionResult<List<ProblemDto>>> GetProblemsByCategory([FromQuery] GetProblemsByCategoryQuery query, CancellationToken cancellationToken)
+    public async Task<ActionResult<ProblemsDto>> GetProblems([FromQuery] GetProblemsQuery query, CancellationToken cancellationToken)
     {
         return Ok(await Mediator.Send(query, cancellationToken));
     }

@@ -167,50 +167,6 @@
         }
       }
     },
-    "/ProblemCategories/filtred": {
-      "get": {
-        "tags": [
-          "ProblemCategories"
-        ],
-        "operationId": "ProblemCategories_GetProblemCategoriesFiltered",
-        "parameters": [
-          {
-            "name": "Keyword",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "ProblemCatalogId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "nullable": true
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProblemCategoryDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/ProblemCategories": {
       "post": {
         "tags": [
@@ -378,7 +334,7 @@
             "name": "query",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/GetAllProblemsQuery"
+              "$ref": "#/components/schemas/GetProblemsQuery"
             },
             "x-position": 1
           }
@@ -389,10 +345,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProblemDto"
-                  }
+                  "$ref": "#/components/schemas/ProblemsDto"
                 }
               }
             }
@@ -457,139 +410,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Problems/suggestions": {
-      "get": {
-        "tags": [
-          "Problems"
-        ],
-        "operationId": "Problems_GetProblemSuggestions",
-        "parameters": [
-          {
-            "name": "Keyword",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "ProblemCategoryId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "nullable": true
-            },
-            "x-position": 2
-          },
-          {
-            "name": "IncludedProblems",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProblemDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Problems/categories": {
-      "get": {
-        "tags": [
-          "Problems"
-        ],
-        "operationId": "Problems_GetProblemCatalogs",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemCategoriesDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Problems/filtred": {
-      "get": {
-        "tags": [
-          "Problems"
-        ],
-        "operationId": "Problems_GetProblemsByCategory",
-        "parameters": [
-          {
-            "name": "ProblemCategoryIds",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "x-position": 1
-          },
-          {
-            "name": "ProblemCatalogIds",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProblemDto"
-                  }
                 }
               }
             }
@@ -782,59 +602,6 @@
           }
         }
       },
-      "ProblemCategoryDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "problemCatalogId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "problemCatalog": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ProblemCatalogDto"
-              }
-            ]
-          }
-        }
-      },
-      "ProblemCatalogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProblemCategoryDto"
-            }
-          }
-        }
-      },
       "CreateProblemCategoryCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -904,6 +671,186 @@
           }
         }
       },
+      "ProblemsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "problemCatalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemCatalogDto"
+            }
+          },
+          "problemCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemCategoryDto"
+            }
+          },
+          "problems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemDto"
+            }
+          }
+        }
+      },
+      "ProblemCatalogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "problemCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemCategory"
+            }
+          }
+        }
+      },
+      "ProblemCategory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "problemCatalogId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "problems": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Problem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "problemCategoryId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "ProblemCategoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "problemCatalogId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "problems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemDto"
+            }
+          }
+        }
+      },
       "ProblemDto": {
         "type": "object",
         "additionalProperties": false,
@@ -923,38 +870,12 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
-          },
-          "problemCategory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ProblemCategoryDto"
-              }
-            ]
           }
         }
       },
-      "GetAllProblemsQuery": {
+      "GetProblemsQuery": {
         "type": "object",
         "additionalProperties": false
-      },
-      "ProblemCategoriesDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "problemCatalogs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProblemCatalogDto"
-            }
-          },
-          "problemCategories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProblemCategoryDto"
-            }
-          }
-        }
       },
       "CreateProblemCommand": {
         "type": "object",

@@ -1,30 +1,57 @@
 import { createSelector } from '@ngrx/store';
-import { EntityType } from 'app/shared/enums/entity-type.enum';
+import { IProblemCatalogDto, IProblemCategoryDto, IProblemDto, IProblemsDto } from 'app/web-api-client';
 
-export const selectState = (state) => state.problemPageState;
+export interface IProblemsFilter {
+    keyword: string;
+    selectedCatalogs?: number[];
+    selectedCategories?: number[];
+}
+
+export interface IProblemPageState {
+    problems: IProblemsDto;
+    problemsFilter: IProblemsFilter;
+    problem: IProblemDto;
+    problemCatalog: IProblemCatalogDto;
+    problemCategory: IProblemCategoryDto;
+}
+
+export const selectState = (state: IProblemPageState) => state;
 
 //Problem Entity State Selector
-export const selectProblemEntityState = createSelector(
+export const problemSelector = createSelector(
     selectState,
     (state) => {
-        return state.get(EntityType.Problem);
+        return state.problem;
+    }
+);
+//Problems List State Selector
+export const problemsSelector = createSelector(
+    selectState,
+    (state) => {
+        return state.problems;
     }
 );
 
-//Problem List Entity State Selector
-export const selectProblemListEntityState = createSelector(
+//Problems List Filter State Selector
+export const problemsFilterSelector = createSelector(
     selectState,
-    (state) => state.get(EntityType.ProblemList)
+    (state) => {
+        return state.problemsFilter;
+    }
 );
 
 //Problem Catalog Entity State Selector
-export const selectProblemCatalogEntityState = createSelector(
+export const problemCatalogSelector = createSelector(
     selectState,
-    (state) => state.get(EntityType.ProblemCatalog)
+    (state) => {
+        return state.problemCatalog;
+    }
 );
 
 //Problem Category Entity State Selector
-export const selectProblemCategoryEntityState = createSelector(
+export const problemsCategorySelector = createSelector(
     selectState,
-    (state) => state.get(EntityType.ProblemCategory)
+    (state) => {
+        return state.problemCategory;
+    }
 );
