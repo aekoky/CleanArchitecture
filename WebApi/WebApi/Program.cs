@@ -1,9 +1,6 @@
-using System.Net.Http.Headers;
-using Azure.Core;
 using CleanArchitecture.Persistence.Initialization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Logging;
-using NSwag;
 
 var builder = WebApplication.CreateBuilder(args);
 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NSwag")))

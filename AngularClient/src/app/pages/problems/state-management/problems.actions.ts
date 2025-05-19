@@ -1,6 +1,5 @@
 import { createAction, props } from '@ngrx/store';
 import { IProblemDto, IProblemCatalogDto, IProblemCategoryDto, IProblemsDto, ProblemDto } from 'app/web-api-client';
-import { IProblemsFilter } from './problems.selectors';
 
 //Problem Actions
 
@@ -34,11 +33,6 @@ export const updateProblem = createAction(
 export const loadProblems = createAction(
     '[Problems Page] Load Problems',
     props<IProblemsDto>()
-);
-
-export const filterProblems = createAction(
-    '[Problems Page] Filter Problems',
-    props<IProblemsFilter>()
 );
 
 //Problem Catalog Actions

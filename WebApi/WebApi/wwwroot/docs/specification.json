@@ -710,118 +710,11 @@
             "type": "string",
             "nullable": true
           },
-          "problemCategories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProblemCategory"
-            }
-          }
-        }
-      },
-      "ProblemCategory": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "problemCatalogId": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "problems": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "Problem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "problemCategoryId": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "BaseAuditableEntity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "x-abstract": true,
-            "additionalProperties": false,
-            "properties": {
-              "created": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "lastModified": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "lastModifiedBy": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "BaseEntity": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
+          "categoriesCount": {
             "type": "integer",
             "format": "int32"
-          },
-          "domainEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BaseEvent"
-            }
           }
         }
-      },
-      "BaseEvent": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
       },
       "ProblemCategoryDto": {
         "type": "object",
@@ -843,11 +736,9 @@
             "format": "int32",
             "nullable": true
           },
-          "problems": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProblemDto"
-            }
+          "problemsCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

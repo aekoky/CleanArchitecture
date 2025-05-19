@@ -13,11 +13,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DirectivesModule } from 'app/shared/directives/directives.module';
-import { TreeModule } from 'app/shared/modules/tree/tree.module';
 import { ProblemCatalogComponent } from './problem-catalog/problem-catalog.component';
 import { ProblemCategoryComponent } from './problem-category/problem-category.component';
 import { ProblemComponent } from './problem/problem.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatBadgeModule } from '@angular/material/badge';
+import { ProblemCatalogsComponent } from './problem-catalogs/problem-catalogs.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTreeModule } from '@angular/material/tree';
 
 const problemsRoutes: Route[] = [
   {
@@ -41,6 +45,7 @@ const problemsRoutes: Route[] = [
     ProblemComponent,
     ProblemCategoryComponent,
     ProblemCatalogComponent,
+    ProblemCatalogsComponent,
   ],
   imports: [
     RouterModule.forChild(problemsRoutes),
@@ -56,8 +61,12 @@ const problemsRoutes: Route[] = [
     MatPaginatorModule,
     MatMenuModule,
     DirectivesModule,
-    TreeModule,
     MatSidenavModule,
+    MatBadgeModule,
+    MatDividerModule,
+    MatTreeModule,
+    MatCheckboxModule,
+    MatDividerModule
   ]
 })
 export class ProblemsModule {

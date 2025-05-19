@@ -1183,7 +1183,7 @@ export class ProblemCatalogDto implements IProblemCatalogDto {
     id?: number;
     name?: string;
     description?: string | undefined;
-    problemCategories?: ProblemCategory[];
+    categoriesCount?: number;
 
     constructor(data?: IProblemCatalogDto) {
         if (data) {
@@ -1199,11 +1199,7 @@ export class ProblemCatalogDto implements IProblemCatalogDto {
             this.id = _data["id"];
             this.name = _data["name"];
             this.description = _data["description"];
-            if (Array.isArray(_data["problemCategories"])) {
-                this.problemCategories = [] as any;
-                for (let item of _data["problemCategories"])
-                    this.problemCategories!.push(ProblemCategory.fromJS(item));
-            }
+            this.categoriesCount = _data["categoriesCount"];
         }
     }
 
@@ -1219,11 +1215,7 @@ export class ProblemCatalogDto implements IProblemCatalogDto {
         data["id"] = this.id;
         data["name"] = this.name;
         data["description"] = this.description;
-        if (Array.isArray(this.problemCategories)) {
-            data["problemCategories"] = [];
-            for (let item of this.problemCategories)
-                data["problemCategories"].push(item.toJSON());
-        }
+        data["categoriesCount"] = this.categoriesCount;
         return data;
     }
 }
@@ -1232,214 +1224,7 @@ export interface IProblemCatalogDto {
     id?: number;
     name?: string;
     description?: string | undefined;
-    problemCategories?: ProblemCategory[];
-}
-
-export abstract class BaseEntity implements IBaseEntity {
-    id?: number;
-    domainEvents?: BaseEvent[];
-
-    constructor(data?: IBaseEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            if (Array.isArray(_data["domainEvents"])) {
-                this.domainEvents = [] as any;
-                for (let item of _data["domainEvents"])
-                    this.domainEvents!.push(BaseEvent.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): BaseEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        if (Array.isArray(this.domainEvents)) {
-            data["domainEvents"] = [];
-            for (let item of this.domainEvents)
-                data["domainEvents"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IBaseEntity {
-    id?: number;
-    domainEvents?: BaseEvent[];
-}
-
-export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
-    created?: Date;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-
-    constructor(data?: IBaseAuditableEntity) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
-            this.lastModifiedBy = _data["lastModifiedBy"];
-        }
-    }
-
-    static override fromJS(data: any): BaseAuditableEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
-        data["lastModifiedBy"] = this.lastModifiedBy;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IBaseAuditableEntity extends IBaseEntity {
-    created?: Date;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-}
-
-export class ProblemCategory extends BaseAuditableEntity implements IProblemCategory {
-    name?: string;
-    description?: string | undefined;
-    problemCatalogId?: number | undefined;
-    problems?: Problem[];
-
-    constructor(data?: IProblemCategory) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.description = _data["description"];
-            this.problemCatalogId = _data["problemCatalogId"];
-            if (Array.isArray(_data["problems"])) {
-                this.problems = [] as any;
-                for (let item of _data["problems"])
-                    this.problems!.push(Problem.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): ProblemCategory {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemCategory();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["description"] = this.description;
-        data["problemCatalogId"] = this.problemCatalogId;
-        if (Array.isArray(this.problems)) {
-            data["problems"] = [];
-            for (let item of this.problems)
-                data["problems"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IProblemCategory extends IBaseAuditableEntity {
-    name?: string;
-    description?: string | undefined;
-    problemCatalogId?: number | undefined;
-    problems?: Problem[];
-}
-
-export class Problem extends BaseAuditableEntity implements IProblem {
-    name?: string;
-    description?: string | undefined;
-    problemCategoryId?: number | undefined;
-
-    constructor(data?: IProblem) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.name = _data["name"];
-            this.description = _data["description"];
-            this.problemCategoryId = _data["problemCategoryId"];
-        }
-    }
-
-    static override fromJS(data: any): Problem {
-        data = typeof data === 'object' ? data : {};
-        let result = new Problem();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["description"] = this.description;
-        data["problemCategoryId"] = this.problemCategoryId;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IProblem extends IBaseAuditableEntity {
-    name?: string;
-    description?: string | undefined;
-    problemCategoryId?: number | undefined;
-}
-
-export abstract class BaseEvent implements IBaseEvent {
-
-    constructor(data?: IBaseEvent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): BaseEvent {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IBaseEvent {
+    categoriesCount?: number;
 }
 
 export class ProblemCategoryDto implements IProblemCategoryDto {
@@ -1447,7 +1232,7 @@ export class ProblemCategoryDto implements IProblemCategoryDto {
     name?: string;
     description?: string | undefined;
     problemCatalogId?: number | undefined;
-    problems?: ProblemDto[];
+    problemsCount?: number;
 
     constructor(data?: IProblemCategoryDto) {
         if (data) {
@@ -1464,11 +1249,7 @@ export class ProblemCategoryDto implements IProblemCategoryDto {
             this.name = _data["name"];
             this.description = _data["description"];
             this.problemCatalogId = _data["problemCatalogId"];
-            if (Array.isArray(_data["problems"])) {
-                this.problems = [] as any;
-                for (let item of _data["problems"])
-                    this.problems!.push(ProblemDto.fromJS(item));
-            }
+            this.problemsCount = _data["problemsCount"];
         }
     }
 
@@ -1485,11 +1266,7 @@ export class ProblemCategoryDto implements IProblemCategoryDto {
         data["name"] = this.name;
         data["description"] = this.description;
         data["problemCatalogId"] = this.problemCatalogId;
-        if (Array.isArray(this.problems)) {
-            data["problems"] = [];
-            for (let item of this.problems)
-                data["problems"].push(item.toJSON());
-        }
+        data["problemsCount"] = this.problemsCount;
         return data;
     }
 }
@@ -1499,7 +1276,7 @@ export interface IProblemCategoryDto {
     name?: string;
     description?: string | undefined;
     problemCatalogId?: number | undefined;
-    problems?: ProblemDto[];
+    problemsCount?: number;
 }
 
 export class ProblemDto implements IProblemDto {

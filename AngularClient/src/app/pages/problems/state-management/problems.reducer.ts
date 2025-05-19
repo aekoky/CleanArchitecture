@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import * as ProblemPageActions from './problems.actions';
-import { IProblemCatalogDto, IProblemCategoryDto, IProblemDto, IProblemsDto, Problem, ProblemCatalogDto, ProblemCategoryDto, ProblemDto } from 'app/web-api-client';
-import { IProblemsFilter } from './problems.selectors';
+import { IProblemCatalogDto, IProblemCategoryDto, IProblemDto, IProblemsDto, ProblemCatalogDto, ProblemCategoryDto, ProblemDto } from 'app/web-api-client';
 
 export const problemsReducer = createReducer(
     <IProblemsDto>{ problems: [], problemCatalogs: [], problemCategories: [] },
@@ -11,6 +10,8 @@ export const problemsReducer = createReducer(
     on(ProblemPageActions.createProblem, (state, entityState) => {
         const problems = { ...state };
         problems.problems = [...problems.problems, ProblemDto.fromJS(entityState)];
+        if (entityState.problemCategoryId)
+            problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === entityState.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount + 1 }) : problemCategory)
         return problems;
     }),
     on(ProblemPageActions.updateProblem, (state, entityState) => {
@@ -27,6 +28,9 @@ export const problemsReducer = createReducer(
         const index = problems.problems.findIndex(problem => problem.id == entityState.id);
         if (index !== -1) {
             problems.problems = [...problems.problems];
+            const problem = problems.problems[index];
+            if (problem.problemCategoryId)
+                problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === problem.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount - 1 }) : problemCategory)
             problems.problems.splice(index, 1);
         }
         return problems;
@@ -64,6 +68,8 @@ export const problemsReducer = createReducer(
     on(ProblemPageActions.createProblemCategory, (state, entityState) => {
         const problems = { ...state };
         problems.problemCategories = [...problems.problemCategories, ProblemCategoryDto.fromJS(entityState)];
+        if (entityState.problemCatalogId)
+            problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === entityState.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount + 1 }) : problemCatalog);
         return problems;
     }),
     on(ProblemPageActions.updateProblemCategory, (state, entityState) => {
@@ -80,17 +86,14 @@ export const problemsReducer = createReducer(
         const index = problems.problemCategories.findIndex(problem => problem.id == entityState.id);
         if (index !== -1) {
             problems.problemCategories = [...problems.problemCategories];
+            const problemCategory = problems.problemCategories[index];
+            if (problemCategory.problemCatalogId)
+                problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === problemCategory.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount - 1 }) : problemCatalog);
             problems.problemCategories.splice(index, 1);
         }
+
         return problems;
     })
-);
-
-export const problemsFilterReducer = createReducer(
-    <IProblemsFilter>{},
-    on(ProblemPageActions.filterProblems, (state, entityState) => {
-        return entityState;
-    }),
 );
 
 export const problemReducer = createReducer(

@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, of, shareReplay, switchMap, take, tap } from 'rxjs';
-import { TreeService } from 'app/shared/modules/tree/tree.interface';
-import { NodeLevel, TreeNode } from 'app/shared/modules/tree/tree.model';
-import { ProblemService } from './problem.service';
-import { ViewMode } from 'app/shared/enums/view-mode.enum';
-import { ProblemCatalogDto, ProblemCategoryDto } from 'app/web-api-client';
+import { filter, map, Observable, switchMap } from 'rxjs';
 import { DialogService } from 'app/shared/services/dialog.service';
 import { ProblemCatalogService } from './problem-catalog.service';
 import { ProblemCategoryService } from './problem-category.service';
@@ -12,22 +7,21 @@ import { Store } from '@ngrx/store';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { openProblem, openProblemCatalog, openProblemCategory } from './state-management/problems.actions';
 import { problemsSelector } from './state-management/problems.selectors';
+import { TreeNode, NodeLevel } from 'app/shared/models/tree.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ProblemTreeService implements TreeService {
+export class TreeService {
     treeNodes: Observable<TreeNode[]>;
 
     constructor(
         private readonly _dialogService: DialogService,
-        private readonly _problemService: ProblemService,
         private readonly _problemCategoryService: ProblemCategoryService,
         private readonly _problemCatalogService: ProblemCatalogService,
         private readonly _store: Store
     ) {
         this.treeNodes = _store.select(problemsSelector).pipe(
-            shareReplay(1),
             map(problems => {
                 const treeNodes: Array<TreeNode> = [];
                 if (problems?.problemCatalogs?.length)
@@ -39,6 +33,7 @@ export class ProblemTreeService implements TreeService {
                                 name: category.name,
                                 description: category.description,
                                 parentId: category.problemCatalogId,
+                                childCount: category.problemsCount,
                                 children: [],
                                 nodeLevel: NodeLevel.Category
                             }));
@@ -47,6 +42,7 @@ export class ProblemTreeService implements TreeService {
                             name: catalog.name,
                             description: catalog.description,
                             nodeLevel: NodeLevel.Catalog,
+                            childCount: catalog.categoriesCount,
                             children: catalogCategories
                         };
                         treeNodes.push(catalogNode);
@@ -58,6 +54,7 @@ export class ProblemTreeService implements TreeService {
                             name: category.name,
                             description: category.description,
                             parentId: category.problemCatalogId,
+                            childCount: category.problemsCount,
                             nodeLevel: NodeLevel.Category,
                             children: []
                         };
@@ -70,9 +67,6 @@ export class ProblemTreeService implements TreeService {
     deleteTreeNode(id: number, nodeLevel: NodeLevel): Observable<void> {
         let deleteObservable: Observable<void>;
         switch (nodeLevel) {
-            case NodeLevel.Node:
-                deleteObservable = this._problemService.deleteProblem(id);
-                break;
             case NodeLevel.Category:
                 deleteObservable = this._problemCategoryService.deleteProblemCategory(id);
                 break;
@@ -116,9 +110,5 @@ export class ProblemTreeService implements TreeService {
         return this._dialogService.dialog(nodeEntityType).pipe(
             switchMap(matDialogRef => matDialogRef.afterClosed()),
             filter(nodeEntity => !!nodeEntity?.id));
-    }
-
-    getTreeNodes(): Observable<TreeNode[]> {
-        return this.treeNodes;
     }
 }

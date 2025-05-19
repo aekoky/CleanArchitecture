@@ -4,16 +4,14 @@ import { ProblemDto, } from 'app/web-api-client';
 import { FormControl, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Observable, Subject, combineLatestWith, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { DialogService } from 'app/shared/services/dialog.service';
-import { ViewMode } from 'app/shared/enums/view-mode.enum';
-import { EntityState } from 'app/shared/models/entity-state';
 import { ProblemService } from '../problem.service';
-import { ProblemTreeService } from '../problem-tree.service';
-import { NodeLevel, TreeNode } from 'app/shared/modules/tree/tree.model';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { Store } from '@ngrx/store';
 import { problemsSelector } from '../state-management/problems.selectors';
-import { deleteProblem, deleteProblems, filterProblems, loadProblems, openProblem } from '../state-management/problems.actions';
+import { deleteProblems, loadProblems, openProblem } from '../state-management/problems.actions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NodeLevel, TreeNode } from 'app/shared/models/tree.model';
+import { TreeService } from '../tree.service';
 
 @Component({
   selector: 'app-problems-list',
@@ -25,11 +23,9 @@ export class ProblemsListComponent implements OnDestroy {
   ColumnMode = ColumnMode;
   NodeLevel = NodeLevel;
   SelectionType = SelectionType;
-  ViewMode = ViewMode;
   problems$: Observable<ProblemDto[]>;
   selectedProblems = new Array<ProblemDto>();
   selectedNodes = new BehaviorSubject<TreeNode[]>([]);
-  state: EntityState;
 
   filtersForm = new FormGroup({
     keyword: new FormControl(''),
@@ -38,7 +34,7 @@ export class ProblemsListComponent implements OnDestroy {
   constructor(
     private readonly _dialogService: DialogService,
     public problemService: ProblemService,
-    public problemTreeService: ProblemTreeService,
+    public treeService: TreeService,
     private readonly _store: Store
   ) {
     const filterKeyword$ = this.filtersForm.controls.keyword.valueChanges.pipe(
@@ -72,6 +68,10 @@ export class ProblemsListComponent implements OnDestroy {
         return filtredProblems;
       }));
     this.problemService.getProblems().subscribe(problems => this._store.dispatch(loadProblems(problems)));
+  }
+
+  selectionChanged(selectedNodes: TreeNode[]) {
+    this.selectedNodes.next(selectedNodes);
   }
 
   ngOnDestroy(): void {

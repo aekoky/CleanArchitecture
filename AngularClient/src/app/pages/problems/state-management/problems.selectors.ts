@@ -1,15 +1,8 @@
 import { createSelector } from '@ngrx/store';
 import { IProblemCatalogDto, IProblemCategoryDto, IProblemDto, IProblemsDto } from 'app/web-api-client';
 
-export interface IProblemsFilter {
-    keyword: string;
-    selectedCatalogs?: number[];
-    selectedCategories?: number[];
-}
-
 export interface IProblemPageState {
     problems: IProblemsDto;
-    problemsFilter: IProblemsFilter;
     problem: IProblemDto;
     problemCatalog: IProblemCatalogDto;
     problemCategory: IProblemCategoryDto;
@@ -29,14 +22,6 @@ export const problemsSelector = createSelector(
     selectState,
     (state) => {
         return state.problems;
-    }
-);
-
-//Problems List Filter State Selector
-export const problemsFilterSelector = createSelector(
-    selectState,
-    (state) => {
-        return state.problemsFilter;
     }
 );
 

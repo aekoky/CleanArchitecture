@@ -24,3 +24,8 @@ body {
         ));
 }
 
+.datatable-body-cell
+{
+   display: flex !important;
+   align-items: center !important;
+}

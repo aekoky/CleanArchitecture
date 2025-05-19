@@ -32,19 +32,12 @@
                     <div class="flex flex-col h-full">
 
                         <!-- Close button -->
-                        <div class="flex w-full lg:hidden justify-end">
+                        <div class="flex w-full md:hidden justify-end">
                             <button mat-icon-button (click)="drawer.close()">
                                 <mat-icon>close</mat-icon>
                             </button>
                         </div>
-                        <!-- Header -->
-                        <div class="flex items-center justify-between mx-2 my-4">
-                            <!-- Title -->
-                            <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none">Catégories
-                            </div>
-                        </div>
-                        <app-tree class="min-h-0 grow" [selectedNodes]="selectedNodes"
-                            [treeService]="problemTreeService"></app-tree>
+                        <app-problem-catalogs class="min-h-0 grow" (selectionChanged)="selectionChanged($event)"></app-problem-catalogs>
                     </div>
                 </div>
 
@@ -54,7 +47,7 @@
                     <ngx-datatable class="material grow" [rows]="problems$ | async" [rowIdentity]="getId"
                         [columnMode]="ColumnMode.standard" [selectionType]="SelectionType.checkbox"
                         [selectAllRowsOnPage]="true" [selected]="selectedProblems" [headerHeight]="50"
-                        [scrollbarV]="true" [footerHeight]="60" [rowHeight]="70" (activate)="onActivate($event)"
+                        [scrollbarV]="true" [footerHeight]="60" [rowHeight]="50" (activate)="onActivate($event)"
                         appColumnMode>
                         <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false"
                             [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true"
@@ -69,26 +62,8 @@
                         </ngx-datatable-column>
                         <ngx-datatable-column name="Description" prop="description" [minWidth]="96"
                             [flexGrow]="1"></ngx-datatable-column>
-                        <ngx-datatable-column name="Sous catégorie / Catégorie" prop="name" [minWidth]="96"
-                            [flexGrow]="1">
-                            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                                <ng-container *ngIf="row.problemCategory?.id">
-                                    <div class="h-[50px] flex min-h-4 px-2 items-center">
-                                        <ng-container *ngIf="row.problemCategory?.problemCatalog?.id">
-                                            <span
-                                                class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.problemCatalog?.name}}
-                                                /
-                                            </span>
-
-                                        </ng-container>
-                                        <span class="h-4 min-h-4 px-2 items-start">{{row?.problemCategory?.name}}
-                                        </span>
-                                    </div>
-                                </ng-container>
-                            </ng-template>
-                        </ngx-datatable-column>
-                        <ngx-datatable-column headerClass="h-full" cellClass="p-1" [flexGrow]="0" [sortable]="false"
-                            [draggable]="false" [resizeable]="false" [width]="58" [minWidth]="58" [frozenRight]="true"
+                        <ngx-datatable-column headerClass="h-full" [flexGrow]="0" [sortable]="false" [draggable]="false"
+                            [resizeable]="false" [width]="58" [minWidth]="58" [frozenRight]="true"
                             [canAutoResize]="false">
                             <ng-template let-row="row" ngx-datatable-cell-template>
                                 <a mat-icon-button [matMenuTriggerFor]="contextMenu" (menuClosed)="(true)"

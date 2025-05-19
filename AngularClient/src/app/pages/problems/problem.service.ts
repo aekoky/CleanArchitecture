@@ -39,6 +39,7 @@ export class ProblemService extends CacheService<ProblemDto> {
                 {
                     next: (id) => {
                         this._toastService.openToast('Le problème a été créé', ToastType.Success, 3000);
+                        problem.id = id;
                         this._store.dispatch(createProblem(problem));
                     },
                     error: error => this._toastService.openToast(error, ToastType.Error),

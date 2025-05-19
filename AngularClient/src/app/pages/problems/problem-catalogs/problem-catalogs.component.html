@@ -1,0 +1,60 @@
+<div class="flex flex-col w-full max-h-full">
+    <!-- Header -->
+    <div class="flex shrimk items-center justify-between mx-2 my-4">
+        <!-- Title -->
+        <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none">Catégories</div>
+    </div>
+    <div class="flex grow flex-col justify-between min-h-0 w-full">
+        <div class="flex grow w-full overflow-auto">
+            <mat-tree class="grow m-2" #tree [dataSource]="treeService.treeNodes | async" [childrenAccessor]="childrenAccessor"
+                [expansionKey]="expansionKeyFn">
+                <!-- This is the tree node template for expandable nodes -->
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodeToggle
+                    [cdkTreeNodeTypeaheadLabel]="node.name" [isExpandable]="node?.children?.length"
+                    class="flex flex-col items-center w-full">
+                    <div class="flex w-full" [matBadge]="node.childCount" [matBadgeHidden]="!node.childCount">
+                        <mat-checkbox [checked]="descendantsAllSelected(node)"
+                            [indeterminate]="descendantsPartiallySelected(node)" labelPosition="before"
+                            (change)="nodeSelectionToggle(node)" (click)="stopPropagation($event)"></mat-checkbox>
+                        <div class="flex grow justify-between items-center gap-2">
+                            <span> {{node.name}}</span>
+                            <div>
+                                <button *ngIf="node?.children?.length; else noChildren" mat-icon-button
+                                    matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                                    <mat-icon class="mat-icon-rtl-mirror">
+                                        {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                                    </mat-icon>
+                                </button>
+                                <ng-template #noChildren>
+                                    <button mat-icon-button disabled></button>
+                                </ng-template>
+                                <a mat-icon-button [matMenuTriggerFor]="contextMenu" (click)="stopPropagation($event)"
+                                    (menuClosed)="(true)" aria-label="actions" [matMenuTriggerData]="{node: node}">
+                                    <mat-icon>more_vert</mat-icon>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <mat-divider class="w-full"></mat-divider>
+                </mat-tree-node>
+            </mat-tree>
+        </div>
+        <div class="flex justify-end items-center w-full">
+            <button (click)="openNode(NodeLevel.Catalog)" mat-button>Ajouter Catégorie</button>
+        </div>
+
+    </div>
+
+    <mat-menu #contextMenu="matMenu">
+        <ng-template matMenuContent let-node="node">
+            <button *ngIf="node.nodeLevel === NodeLevel.Category" (click)="openNode(NodeLevel.Node, undefined, node.id)"
+                mat-menu-item>Ajouter</button>
+            <button *ngIf="node.nodeLevel === NodeLevel.Catalog"
+                (click)="openNode(NodeLevel.Category, undefined, node.id)" mat-menu-item>Ajouter sous
+                catégorie</button>
+            <button (click)="openNode(node.nodeLevel, node)" mat-menu-item>Modifier</button>
+
+            <button (click)="deleteNode(node.id, node.nodeLevel)" mat-menu-item>Supprimer</button>
+        </ng-template>
+    </mat-menu>
+</div>
