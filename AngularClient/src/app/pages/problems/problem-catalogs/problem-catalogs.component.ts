@@ -4,25 +4,36 @@ import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NodeLevel, TreeNode } from 'app/shared/models/tree.model';
 import { TreeService } from '../tree.service';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  imports: [
+    CommonModule,
+    MatBadgeModule,
+    MatTreeModule,
+    MatDividerModule,
+    MatCheckboxModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   selector: 'app-problem-catalogs',
   templateUrl: './problem-catalogs.component.html',
   styleUrls: ['./problem-catalogs.component.css'],
-  standalone: false
 })
 export class ProblemCatalogsComponent {
   NodeLevel = NodeLevel;
-  treeSelection = new SelectionModel<TreeNode>(true, [], true, (node1, node2) => node1?.id + '' + node1?.nodeLevel === node2?.id + '' + node2?.nodeLevel);
-  selectionChanged = output<TreeNode[]>();
 
   constructor(
     readonly treeService: TreeService
   ) {
-    this.treeSelection.changed.pipe(
-      debounceTime(250),
-      takeUntilDestroyed())
-      .subscribe((change: SelectionChange<TreeNode>) => this.selectionChanged.emit(this.treeSelection.selected))
   }
 
   expansionKeyFn = (dataNode: TreeNode) => dataNode.id + '' + dataNode.nodeLevel;
@@ -47,34 +58,34 @@ export class ProblemCatalogsComponent {
   }
 
   selectNode(selectedNode: TreeNode) {
-    this.treeSelection.toggle(selectedNode);
+    this.treeService.treeSelection.toggle(selectedNode);
   }
 
   descendantsAllSelected(node: TreeNode): boolean {
     const descendants = node?.children;
     if (descendants?.length === 0) {
-      return this.treeSelection.isSelected(node);
+      return this.treeService.treeSelection.isSelected(node);
     }
-    const allselected = descendants.every(child => this.treeSelection.isSelected(child));
+    const allselected = descendants.every(child => this.treeService.treeSelection.isSelected(child));
     if (allselected) {
-      this.treeSelection.select(node);
+      this.treeService.treeSelection.select(node);
     } else {
-      this.treeSelection.deselect(node);
+      this.treeService.treeSelection.deselect(node);
     }
     return allselected;
   }
 
   descendantsPartiallySelected(node: TreeNode): boolean {
     const descendants = node?.children;
-    const result = descendants.some(child => this.treeSelection.isSelected(child));
+    const result = descendants.some(child => this.treeService.treeSelection.isSelected(child));
     return result && !this.descendantsAllSelected(node);
   }
 
   nodeSelectionToggle(node: TreeNode): void {
-    this.treeSelection.toggle(node);
+    this.treeService.treeSelection.toggle(node);
     const descendants = node?.children;
-    this.treeSelection.isSelected(node)
-      ? this.treeSelection.select(...descendants)
-      : this.treeSelection.deselect(...descendants);
+    this.treeService.treeSelection.isSelected(node)
+      ? this.treeService.treeSelection.select(...descendants)
+      : this.treeService.treeSelection.deselect(...descendants);
   }
 }

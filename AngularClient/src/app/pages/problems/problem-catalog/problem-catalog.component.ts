@@ -1,22 +1,34 @@
-import { Component, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProblemCatalogDto } from 'app/web-api-client';
-import { Subject, takeUntil, tap } from 'rxjs';
 import { DialogService } from 'app/shared/services/dialog.service';
 import { ProblemCatalogService } from '../problem-catalog.service';
 import { Store } from '@ngrx/store';
 import { problemCatalogSelector } from '../state-management/problems.selectors';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { DirectivesModule } from 'app/shared/directives/directives.module';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatButtonModule,
+    DirectivesModule],
   selector: 'app-problem-catalog',
   templateUrl: './problem-catalog.component.html',
   styleUrls: ['./problem-catalog.component.css'],
-  standalone: false
 })
-export class ProblemCatalogComponent implements OnDestroy {
-  private readonly _unsubscribeAll: Subject<any> = new Subject<any>();
-
+export class ProblemCatalogComponent {
   problemCatalogId: number;
   problemCatalog: ProblemCatalogDto;
   problemCatalogForm = new FormGroup({
@@ -30,7 +42,7 @@ export class ProblemCatalogComponent implements OnDestroy {
     private readonly _problemCatalogService: ProblemCatalogService,
     private readonly _store: Store
   ) {
-    this._store.select(problemCatalogSelector).pipe(takeUntil(this._unsubscribeAll)).subscribe(problemCatalog => {
+    this._store.select(problemCatalogSelector).pipe(takeUntilDestroyed()).subscribe(problemCatalog => {
       if (problemCatalog) {
         this.problemCatalogId = problemCatalog.id;
         this.problemCatalogForm.patchValue(problemCatalog);
@@ -47,11 +59,5 @@ export class ProblemCatalogComponent implements OnDestroy {
       this.problemCatalog = problemCatalog;
       this._dialogService.closeDialog(EntityType.ProblemCatalog, this.problemCatalog);
     })
-  }
-
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
-    this._unsubscribeAll.complete();
   }
 }

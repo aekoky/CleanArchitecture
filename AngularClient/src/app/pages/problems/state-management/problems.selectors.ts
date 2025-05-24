@@ -10,14 +10,12 @@ export interface IProblemPageState {
 
 export const selectState = (state: IProblemPageState) => state;
 
-//Problem Entity State Selector
 export const problemSelector = createSelector(
     selectState,
     (state) => {
         return state.problem;
     }
 );
-//Problems List State Selector
 export const problemsSelector = createSelector(
     selectState,
     (state) => {
@@ -25,7 +23,6 @@ export const problemsSelector = createSelector(
     }
 );
 
-//Problem Catalog Entity State Selector
 export const problemCatalogSelector = createSelector(
     selectState,
     (state) => {
@@ -33,7 +30,6 @@ export const problemCatalogSelector = createSelector(
     }
 );
 
-//Problem Category Entity State Selector
 export const problemsCategorySelector = createSelector(
     selectState,
     (state) => {

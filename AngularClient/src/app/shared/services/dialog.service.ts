@@ -23,20 +23,17 @@ export class DialogService {
         let dialogComponent: Promise<ComponentType<any>>;
         switch (type) {
             case EntityType.Problem:
-                dialogComponent = import('app/pages/problems/problems.module')
-                    .then(m => m.ProblemsModule)
-                    .then((m) => m.components.ProblemComponent);
+                dialogComponent = import('app/pages/problems/problem/problem.component')
+                    .then(m => m.ProblemComponent);
                 break;
             case EntityType.ProblemCatalog:
-                dialogComponent = import('app/pages/problems/problems.module')
-                    .then(m => m.ProblemsModule)
-                    .then((m) => m.components.ProblemCatalogComponent);
+                dialogComponent = import('app/pages/problems/problem-catalog/problem-catalog.component')
+                    .then(m => m.ProblemCatalogComponent);
                 break;
 
             case EntityType.ProblemCategory:
-                dialogComponent = import('app/pages/problems/problems.module')
-                    .then(m => m.ProblemsModule)
-                    .then((m) => m.components.ProblemCategoryComponent);
+                dialogComponent = import('app/pages/problems/problem-category/problem-category.component')
+                    .then(m => m.ProblemCategoryComponent);
                 break;
         }
 

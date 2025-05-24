@@ -1,21 +1,34 @@
-import { Component, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IProblemCategoryDto, ProblemDto } from 'app/web-api-client';
-import { Subject, takeUntil } from 'rxjs';
 import { ProblemService } from '../problem.service';
 import { DialogService } from 'app/shared/services/dialog.service';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { Store } from '@ngrx/store';
 import { problemSelector } from '../state-management/problems.selectors';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { DirectivesModule } from 'app/shared/directives/directives.module';
 
 @Component({
+    imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatButtonModule,
+    DirectivesModule],
   selector: 'app-problem',
   templateUrl: './problem.component.html',
   styleUrls: ['./problem.component.css'],
-  standalone: false
 })
-export class ProblemComponent implements OnDestroy {
-  private readonly _unsubscribeAll: Subject<any> = new Subject<any>();
+export class ProblemComponent {
   problemId: number | undefined;
   problem: ProblemDto;
   problemForm = new FormGroup({
@@ -31,7 +44,7 @@ export class ProblemComponent implements OnDestroy {
     private readonly _problemService: ProblemService,
     private readonly _store: Store
   ) {
-    this._store.select(problemSelector).pipe(takeUntil(this._unsubscribeAll)).subscribe(problem => {
+    this._store.select(problemSelector).pipe(takeUntilDestroyed()).subscribe(problem => {
       if (problem) {
         this.problemId = problem.id;
         this.problemForm.patchValue(problem);
@@ -48,11 +61,5 @@ export class ProblemComponent implements OnDestroy {
       this.problem = problem;
       this._dialogService.closeDialog(EntityType.Problem, this.problem);
     });
-  }
-
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next(null);
-    this._unsubscribeAll.complete();
   }
 }

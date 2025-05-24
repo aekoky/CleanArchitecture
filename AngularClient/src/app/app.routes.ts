@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     {
         path: '',
-        loadChildren: () => import('app/pages/problems/problems.module').then(m => m.ProblemsModule),
+        loadComponent: () => import('app/pages/problems/problems-list/problems-list.component').then(m => m.ProblemsListComponent),
+        title: "CleanArchitecture - Les problèmes",
     },
 ];

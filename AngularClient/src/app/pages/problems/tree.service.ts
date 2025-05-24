@@ -8,12 +8,14 @@ import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { openProblem, openProblemCatalog, openProblemCategory } from './state-management/problems.actions';
 import { problemsSelector } from './state-management/problems.selectors';
 import { TreeNode, NodeLevel } from 'app/shared/models/tree.model';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TreeService {
     treeNodes: Observable<TreeNode[]>;
+  treeSelection = new SelectionModel<TreeNode>(true, [], true, (node1, node2) => node1?.id + '' + node1?.nodeLevel === node2?.id + '' + node2?.nodeLevel);
 
     constructor(
         private readonly _dialogService: DialogService,

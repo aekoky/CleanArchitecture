@@ -1,8 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { Component } from '@angular/core';
+import { ColumnMode, NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
 import { ProblemDto, } from 'app/web-api-client';
-import { FormControl, FormGroup } from '@angular/forms';
-import { BehaviorSubject, Observable, Subject, combineLatestWith, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Observable, combineLatestWith, debounceTime, distinctUntilChanged, filter, map, startWith, switchMap } from 'rxjs';
 import { DialogService } from 'app/shared/services/dialog.service';
 import { ProblemService } from '../problem.service';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
@@ -10,22 +10,45 @@ import { Store } from '@ngrx/store';
 import { problemsSelector } from '../state-management/problems.selectors';
 import { deleteProblems, loadProblems, openProblem } from '../state-management/problems.actions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NodeLevel, TreeNode } from 'app/shared/models/tree.model';
+import { NodeLevel } from 'app/shared/models/tree.model';
 import { TreeService } from '../tree.service';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { ProblemCatalogsComponent } from '../problem-catalogs/problem-catalogs.component';
+import { DirectivesModule } from 'app/shared/directives/directives.module';
 
 @Component({
+  imports: [
+    MatDialogModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    ProblemCatalogsComponent,
+    MatSidenavModule,
+    MatMenuModule,
+    NgxDatatableModule,
+    DirectivesModule
+  ],
   selector: 'app-problems-list',
   templateUrl: './problems-list.component.html',
   styleUrls: ['./problems-list.component.css'],
-  standalone: false
 })
-export class ProblemsListComponent implements OnDestroy {
+export class ProblemsListComponent {
   ColumnMode = ColumnMode;
   NodeLevel = NodeLevel;
   SelectionType = SelectionType;
   problems$: Observable<ProblemDto[]>;
   selectedProblems = new Array<ProblemDto>();
-  selectedNodes = new BehaviorSubject<TreeNode[]>([]);
 
   filtersForm = new FormGroup({
     keyword: new FormControl(''),
@@ -42,11 +65,13 @@ export class ProblemsListComponent implements OnDestroy {
       debounceTime(250),
       distinctUntilChanged(),
       takeUntilDestroyed());
-    const selectedNodes$ = this.selectedNodes.pipe(
+    const selectedNodes$ = treeService.treeSelection.changed.pipe(
       takeUntilDestroyed(),
-      map(selectedNodes => {
-        const categories = selectedNodes.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Category).map(selectedNode => selectedNode.id);
-        const catalogs = selectedNodes.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Catalog).map(selectedNode => selectedNode.id);
+      map(selectionChangedEvent => selectionChangedEvent.source.selected),
+      startWith(treeService.treeSelection.selected),
+      map(selected => {
+        const categories = selected.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Category).map(selectedNode => selectedNode.id);
+        const catalogs = selected.filter(selectedNode => selectedNode.nodeLevel === NodeLevel.Catalog).map(selectedNode => selectedNode.id);
         return { categories, catalogs };
       }));
 
@@ -68,14 +93,6 @@ export class ProblemsListComponent implements OnDestroy {
         return filtredProblems;
       }));
     this.problemService.getProblems().subscribe(problems => this._store.dispatch(loadProblems(problems)));
-  }
-
-  selectionChanged(selectedNodes: TreeNode[]) {
-    this.selectedNodes.next(selectedNodes);
-  }
-
-  ngOnDestroy(): void {
-    this.selectedNodes.complete();
   }
 
   openProblemDialog(problemDto?: ProblemDto): void {

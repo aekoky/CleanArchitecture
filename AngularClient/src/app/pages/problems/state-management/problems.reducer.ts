@@ -11,7 +11,7 @@ export const problemsReducer = createReducer(
         const problems = { ...state };
         problems.problems = [...problems.problems, ProblemDto.fromJS(entityState)];
         if (entityState.problemCategoryId)
-            problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === entityState.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount + 1 }) : problemCategory)
+            problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === entityState.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount ?? 0 + 1 }) : problemCategory)
         return problems;
     }),
     on(ProblemPageActions.updateProblem, (state, entityState) => {
@@ -30,7 +30,7 @@ export const problemsReducer = createReducer(
             problems.problems = [...problems.problems];
             const problem = problems.problems[index];
             if (problem.problemCategoryId)
-                problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === problem.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount - 1 }) : problemCategory)
+                problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === problem.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount ?? 0 - 1 }) : problemCategory)
             problems.problems.splice(index, 1);
         }
         return problems;
@@ -69,7 +69,7 @@ export const problemsReducer = createReducer(
         const problems = { ...state };
         problems.problemCategories = [...problems.problemCategories, ProblemCategoryDto.fromJS(entityState)];
         if (entityState.problemCatalogId)
-            problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === entityState.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount + 1 }) : problemCatalog);
+            problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === entityState.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount ?? 0 + 1 }) : problemCatalog);
         return problems;
     }),
     on(ProblemPageActions.updateProblemCategory, (state, entityState) => {
@@ -88,10 +88,9 @@ export const problemsReducer = createReducer(
             problems.problemCategories = [...problems.problemCategories];
             const problemCategory = problems.problemCategories[index];
             if (problemCategory.problemCatalogId)
-                problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === problemCategory.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount - 1 }) : problemCatalog);
+                problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === problemCategory.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount ?? 0 - 1 }) : problemCatalog);
             problems.problemCategories.splice(index, 1);
         }
-
         return problems;
     })
 );
@@ -100,15 +99,6 @@ export const problemReducer = createReducer(
     <IProblemDto>undefined,
     on(ProblemPageActions.openProblem, (state, entityState) => {
         return entityState;
-    }),
-    on(ProblemPageActions.createProblem, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.updateProblem, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.deleteProblem, (state, entityState) => {
-        return undefined;
     })
 );
 
@@ -116,15 +106,6 @@ export const problemCatalogReducer = createReducer(
     <IProblemCatalogDto>undefined,
     on(ProblemPageActions.openProblemCatalog, (state, entityState) => {
         return entityState;
-    }),
-    on(ProblemPageActions.createProblemCatalog, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.updateProblemCatalog, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.deleteProblemCatalog, (state, entityState) => {
-        return undefined;
     })
 );
 
@@ -132,14 +113,5 @@ export const problemCategoryReducer = createReducer(
     <IProblemCategoryDto>undefined,
     on(ProblemPageActions.openProblemCategory, (state, entityState) => {
         return entityState;
-    }),
-    on(ProblemPageActions.createProblemCategory, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.updateProblemCategory, (state, entityState) => {
-        return undefined;
-    }),
-    on(ProblemPageActions.deleteProblemCategory, (state, entityState) => {
-        return undefined;
     })
 );

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
-import { CreateProblemCategoryCommand, DeleteProblemCategoriesCommand, ProblemCategoryDto, ProblemCategoriesClient, UpdateProblemCategoryCommand } from 'app/web-api-client';
+import { CreateProblemCategoryCommand, ProblemCategoryDto, ProblemCategoriesClient, UpdateProblemCategoryCommand } from 'app/web-api-client';
 import { ToastType } from 'app/shared/enums/taost-type.enum';
 import { ToastService } from 'app/shared/services/toast.service';
 import { CacheService } from 'app/shared/services/cache.service';
