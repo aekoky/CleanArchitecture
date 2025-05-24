@@ -2,11 +2,11 @@
     appScrollToInvalide>
     <!-- Main -->
     <div class="flex justify-between md:gap-2 w-full pb-2">
-        <h1 *ngIf="problemCategoryId" class="text-2xl md:text-3xl font-extrabold tracking-tight">Modifier Le problème
-            sous catégorie</h1>
-        <h1 *ngIf="!problemCategoryId" class="text-2xl md:text-3xl font-extrabold tracking-tight">Nouvel problème
-            sous catégorie
-        </h1>
+        @if(problemCategoryId){
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Modifier Le problème sous catégorie</h1>
+        }@else{
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Nouvel problème sous catégorie</h1>
+        }
         <button mat-icon-button type="button" *appCloseDialog="problemCategoryForm">
             <mat-icon>close</mat-icon>
         </button>
@@ -17,8 +17,9 @@
         <mat-form-field class="w-full min-w-96">
             <mat-label>Nom</mat-label>
             <input matInput formControlName="name" />
-            <mat-error *ngIf="problemCategoryForm.controls.name.errors?.['required']">Ce champ est
-                obligatoire.</mat-error>
+            @if(problemCategoryForm.controls.name.errors?.['required']){
+            <mat-error>Ce champ est obligatoire.</mat-error>
+            }
         </mat-form-field>
         <!-- description -->
         <mat-form-field class="w-full">

@@ -6,7 +6,6 @@ import { ProblemCategoryService } from '../problem-category.service';
 import { Store } from '@ngrx/store';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { problemsCategorySelector as problemCategorySelector } from '../state-management/problems.selectors';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +15,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,

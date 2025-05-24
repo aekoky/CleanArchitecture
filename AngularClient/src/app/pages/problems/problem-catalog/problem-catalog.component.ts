@@ -6,7 +6,6 @@ import { ProblemCatalogService } from '../problem-catalog.service';
 import { Store } from '@ngrx/store';
 import { problemCatalogSelector } from '../state-management/problems.selectors';
 import { EntityType } from 'app/shared/enums/entity-type.enum';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +15,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,

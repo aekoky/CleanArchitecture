@@ -12,9 +12,11 @@
             <div class="text-4xl font-extrabold tracking-tight hidden md:block">Les problèmes</div>
             <div class="flex">
                 <button (click)="openProblemDialog()" mat-button><mat-icon>add_circle</mat-icon>Ajouter</button>
-                <button *ngIf="selectedProblems?.length" (click)="deleteProblems()" mat-button>
+                @if(selectedProblems?.length){
+                <button (click)="deleteProblems()" mat-button>
                     <mat-icon>delete</mat-icon>Supprimer
                 </button>
+                }
             </div>
         </div>
         <form class="flex flex-row justify-end md:justify-stretch" [formGroup]="filtersForm">
@@ -46,9 +48,8 @@
                 <div class="p-4 flex grow w-full h-full">
                     <ngx-datatable class="material grow" [rows]="problems$ | async" [rowIdentity]="getId"
                         [columnMode]="ColumnMode.standard" [selectionType]="SelectionType.checkbox"
-                        [selectAllRowsOnPage]="true" [selected]="selectedProblems" [headerHeight]="50"
-                        [scrollbarV]="true" [footerHeight]="60" [rowHeight]="50" (activate)="onActivate($event)"
-                        appColumnMode>
+                        [selected]="selectedProblems" [headerHeight]="50" [scrollbarV]="true" [footerHeight]="60"
+                        [rowHeight]="50" (select)="onSelect($event)" appColumnMode>
                         <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false"
                             [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true"
                             [frozenLeft]="true">

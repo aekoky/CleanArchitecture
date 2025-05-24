@@ -111,10 +111,10 @@ export class ProblemsListComponent {
     if (selectedProblemsIds?.length)
       this.problemService.deleteProblems(selectedProblemsIds).subscribe(() => this._store.dispatch(deleteProblems({ ids: selectedProblemsIds })));
   }
-
-  onActivate(event) {
-    if (event?.type === 'dblclick' && event?.row?.id)
-      this.openProblemDialog(event.row);
+  
+  onSelect({ selected }) {
+    this.selectedProblems.splice(0, this.selectedProblems.length);
+    this.selectedProblems.push(...selected);
   }
 
   getId(row) {

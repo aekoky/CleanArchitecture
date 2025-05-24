@@ -2,11 +2,11 @@
     appScrollToInvalide>
     <!-- Main -->
     <div class="flex justify-between md:gap-2 w-full pb-2">
-        <h1 *ngIf="problemCatalogId" class="text-2xl md:text-3xl font-extrabold tracking-tight">Modifier Le problème
-            catégorie</h1>
-        <h1 *ngIf="!problemCatalogId" class="text-2xl md:text-3xl font-extrabold tracking-tight">Nouvel problème
-            catégorie
-        </h1>
+        @if(problemCatalogId){
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Modifier Le problème catégorie</h1>
+        }@else{
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Nouvel problème catégorie</h1>
+        }
         <button mat-icon-button type="button" *appCloseDialog="problemCatalogForm">
             <mat-icon>close</mat-icon>
         </button>
@@ -17,8 +17,9 @@
         <mat-form-field class="w-full min-w-96">
             <mat-label>Nom</mat-label>
             <input matInput formControlName="name" />
-            <mat-error *ngIf="problemCatalogForm.controls.name.errors?.['required']">Ce champ est
-                obligatoire.</mat-error>
+            @if(problemCatalogForm.controls.name.errors?.['required']){
+            <mat-error>Ce champ est obligatoire.</mat-error>
+            }
         </mat-form-field>
         <!-- description -->
         <mat-form-field class="w-full">
@@ -27,9 +28,7 @@
         </mat-form-field>
     </div>
     <div class="flex justify-end items-center py-2">
-        <button type="submit" [disabled]="problemCatalogForm.disabled"
-          
-            color="primary" mat-flat-button>
+        <button type="submit" [disabled]="problemCatalogForm.disabled" color="primary" mat-flat-button>
             Enregistrer
         </button>
     </div>

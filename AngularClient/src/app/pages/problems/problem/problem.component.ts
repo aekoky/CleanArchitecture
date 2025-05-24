@@ -7,7 +7,6 @@ import { EntityType } from 'app/shared/enums/entity-type.enum';
 import { Store } from '@ngrx/store';
 import { problemSelector } from '../state-management/problems.selectors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +15,6 @@ import { DirectivesModule } from 'app/shared/directives/directives.module';
 
 @Component({
     imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,

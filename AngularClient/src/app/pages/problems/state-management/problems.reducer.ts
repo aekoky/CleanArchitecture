@@ -30,7 +30,7 @@ export const problemsReducer = createReducer(
             problems.problems = [...problems.problems];
             const problem = problems.problems[index];
             if (problem.problemCategoryId)
-                problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === problem.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount ?? 0 - 1 }) : problemCategory)
+                problems.problemCategories = problems.problemCategories.map(problemCategory => problemCategory.id === problem.problemCategoryId ? ProblemCategoryDto.fromJS({ ...problemCategory, problemsCount: problemCategory.problemsCount ?? 1 - 1 }) : problemCategory)
             problems.problems.splice(index, 1);
         }
         return problems;
@@ -88,7 +88,7 @@ export const problemsReducer = createReducer(
             problems.problemCategories = [...problems.problemCategories];
             const problemCategory = problems.problemCategories[index];
             if (problemCategory.problemCatalogId)
-                problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === problemCategory.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount ?? 0 - 1 }) : problemCatalog);
+                problems.problemCatalogs = problems.problemCatalogs.map(problemCatalog => problemCatalog.id === problemCategory.problemCatalogId ? ProblemCatalogDto.fromJS({ ...problemCatalog, categoriesCount: problemCatalog.categoriesCount ?? 1 - 1 }) : problemCatalog);
             problems.problemCategories.splice(index, 1);
         }
         return problems;
