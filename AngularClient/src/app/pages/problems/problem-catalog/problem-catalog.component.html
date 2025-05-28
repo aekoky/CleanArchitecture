@@ -3,9 +3,9 @@
     <!-- Main -->
     <div class="flex justify-between md:gap-2 w-full pb-2">
         @if(problemCatalogId){
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Modifier Le problème catégorie</h1>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight" i18n>Update the category of problem</h1>
         }@else{
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Nouvel problème catégorie</h1>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight" i18n>New category of problem</h1>
         }
         <button mat-icon-button type="button" *appCloseDialog="problemCatalogForm">
             <mat-icon>close</mat-icon>
@@ -15,21 +15,20 @@
     <div class="flex flex-col overflow-auto px-2 md:px-4">
         <!-- name -->
         <mat-form-field class="w-full min-w-96">
-            <mat-label>Nom</mat-label>
+            <mat-label i18n>Name</mat-label>
             <input matInput formControlName="name" />
             @if(problemCatalogForm.controls.name.errors?.['required']){
-            <mat-error>Ce champ est obligatoire.</mat-error>
+            <mat-error i18n>This field is required.</mat-error>
             }
         </mat-form-field>
         <!-- description -->
         <mat-form-field class="w-full">
-            <mat-label>Description</mat-label>
+            <mat-label i18n>Description</mat-label>
             <textarea matInput formControlName="description"></textarea>
         </mat-form-field>
     </div>
     <div class="flex justify-end items-center py-2">
-        <button type="submit" [disabled]="problemCatalogForm.disabled" color="primary" mat-flat-button>
-            Enregistrer
-        </button>
+        <button type="submit" [disabled]="problemCatalogForm.disabled" color="primary" mat-flat-button
+            i18n>Save</button>
     </div>
 </form>

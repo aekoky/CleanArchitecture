@@ -62,7 +62,21 @@ services:
       MSSQL_USER: "SA"
     expose:
       - 1433:1433
-    ports:
-      - 1433:1433
     volumes:
       - ./data/mssql:/var/opt/mssql/data
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    expose:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf

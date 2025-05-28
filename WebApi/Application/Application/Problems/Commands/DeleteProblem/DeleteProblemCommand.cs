@@ -3,6 +3,7 @@ using CleanArchitecture.Application.Common.Exceptions;
 using CleanArchitecture.Application.Common.Interfaces;
 using CleanArchitecture.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using CleanArchitecture.Application.Application.Problems.Events;
 
 namespace CleanArchitecture.Application.Application.Problems.Commands.DeleteProblem;
 
@@ -15,6 +16,7 @@ public class DeleteProblemCommandHandler(IApplicationDbContext dbContext) : IReq
         var problem = await dbContext.Problems
             .SingleOrDefaultAsync(problem => problem.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Problem), request.Id);
+        problem.AddDomainEvent(new ProblemsUpdatedEvent());
         var transaction = await dbContext.BeginTransactionAsync(cancellationToken);
         try
         {

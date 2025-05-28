@@ -1,12 +1,16 @@
 ﻿using CleanArchitecture.Application.Common.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
+using CleanArchitecture.Application.Common;
+using CleanArchitecture.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using CleanArchitecture.Application.Application.Problems.Events;
 
 namespace CleanArchitecture.Application.Application.ProblemCategories.Commands.DeleteProblemCategories;
 
 public record DeleteProblemCategoriesCommand(int[] Ids) : IRequest;
 
-public class DeleteProblemCategoriesCommandHandler(IApplicationDbContext dbContext) : IRequestHandler<DeleteProblemCategoriesCommand>
+public class DeleteProblemCategoriesCommandHandler(IApplicationDbContext dbContext, IDistributedCache cache) : IRequestHandler<DeleteProblemCategoriesCommand>
 {
     public async Task Handle(DeleteProblemCategoriesCommand request, CancellationToken cancellationToken)
     {
@@ -25,10 +29,16 @@ public class DeleteProblemCategoriesCommandHandler(IApplicationDbContext dbConte
                     .ToListAsync(cancellationToken);
 
                     dbContext.Problems.RemoveRange(problems);
+                    foreach (var problem in problems)
+                        cache.SetAutoJson<Problem>($"{nameof(Problem)}_{problem.Id}");
+
                     await dbContext.SaveChangesAsync(cancellationToken);
                 }
-
+                if (problemCategories.Count != 0)
+                    problemCategories[0]?.AddDomainEvent(new ProblemsUpdatedEvent());
                 dbContext.ProblemCategories.RemoveRange(problemCategories);
+                foreach (var problemCategory in problemCategories)
+                    cache.SetAutoJson<ProblemCategory>($"{nameof(ProblemCategory)}_{problemCategory.Id}");
 
                 await dbContext.SaveChangesAsync(cancellationToken);
             }

@@ -22,7 +22,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 app.UseForwardedHeaders();
-//app.UsePathBase("/api");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -43,7 +42,6 @@ if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NSwag")))
 
 app.UseHealthChecks("/health");
 app.UseStaticFiles();
-
 
 app.UseOpenApi();
 app.UseSwaggerUi(settings =>

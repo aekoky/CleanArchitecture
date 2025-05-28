@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="flex shrimk items-center justify-between mx-2 my-4">
         <!-- Title -->
-        <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none">Catégories</div>
+        <div class="text-2xl md:text-3xl font-extrabold tracking-tight leading-none" i18n>Categories</div>
     </div>
     <div class="flex grow flex-col justify-between min-h-0 w-full">
         <div class="flex grow w-full overflow-auto">
@@ -40,7 +40,7 @@
             </mat-tree>
         </div>
         <div class="flex justify-end items-center w-full">
-            <button (click)="openNode(NodeLevel.Catalog)" mat-button>Ajouter Catégorie</button>
+            <button (click)="openNode(NodeLevel.Catalog)" mat-button i18n>Add category</button>
         </div>
 
     </div>
@@ -49,15 +49,15 @@
         <ng-template matMenuContent let-node="node">
             @switch(node.nodeLevel){
             @case(NodeLevel.Category){
-            <button (click)="openNode(NodeLevel.Node, undefined, node.id)" mat-menu-item>Ajouter</button>
+            <button (click)="openNode(NodeLevel.Node, undefined, node.id)" mat-menu-item i18n>Ajouter</button>
             }
             @case(NodeLevel.Catalog){
-            <button (click)="openNode(NodeLevel.Category, undefined, node.id)" mat-menu-item>Ajouter sous
+            <button (click)="openNode(NodeLevel.Category, undefined, node.id)" mat-menu-item i18n>Ajouter sous
                 catégorie</button>
             }
             }
-            <button (click)="openNode(node.nodeLevel, node)" mat-menu-item>Modifier</button>
-            <button (click)="deleteNode(node.id, node.nodeLevel)" mat-menu-item>Supprimer</button>
+            <button (click)="openNode(node.nodeLevel, node)" mat-menu-item i18n>Modifier</button>
+            <button (click)="deleteNode(node.id, node.nodeLevel)" mat-menu-item i18n>Supprimer</button>
         </ng-template>
     </mat-menu>
 </div>

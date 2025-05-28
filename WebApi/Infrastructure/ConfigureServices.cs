@@ -1,6 +1,5 @@
 ﻿using CleanArchitecture.Infrastructure.Common.Behaviours;
 using Microsoft.Extensions.Configuration;
-using CleanArchitecture.Infrastructure.Common;
 using System.Reflection;
 using FluentValidation;
 using MediatR;
@@ -19,7 +18,11 @@ public static class ConfigureServices
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         });
 
-        services.AddDistributedMemoryCache();
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "CleanArchitecture_";
+        });
 
         return services;
     }

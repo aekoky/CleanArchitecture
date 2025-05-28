@@ -1,12 +1,15 @@
 ﻿using CleanArchitecture.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
+using CleanArchitecture.Application.Common;
+using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Application.Application.ProblemCatalogs.Commands.DeleteProblemCatalogs;
 
 public record DeleteProblemCatalogsCommand(int[] Ids) : IRequest;
 
-public class DeleteProblemCatalogsCommandHandler(IApplicationDbContext dbContext) : IRequestHandler<DeleteProblemCatalogsCommand>
+public class DeleteProblemCatalogsCommandHandler(IApplicationDbContext dbContext, IDistributedCache cache) : IRequestHandler<DeleteProblemCatalogsCommand>
 {
     public async Task Handle(DeleteProblemCatalogsCommand request, CancellationToken cancellationToken)
     {
@@ -28,14 +31,22 @@ public class DeleteProblemCatalogsCommandHandler(IApplicationDbContext dbContext
                         .ToListAsync(cancellationToken);
 
                         dbContext.Problems.RemoveRange(problems);
+                        foreach (var problem in problems)
+                            cache.SetAutoJson<Problem>($"{nameof(Problem)}_{problem.Id}");
+
                         await dbContext.SaveChangesAsync(cancellationToken);
                     }
                     dbContext.ProblemCategories.RemoveRange(problemCategories);
+                    foreach (var problemCategory in problemCategories)
+                        cache.SetAutoJson<ProblemCategory>($"{nameof(ProblemCategory)}_{problemCategory.Id}");
+
                     await dbContext.SaveChangesAsync(cancellationToken);
                 }
 
                 dbContext.ProblemCatalogs.RemoveRange(problemCatalogs);
-
+                foreach (var problemCatalog in problemCatalogs)
+                    cache.SetAutoJson<ProblemCatalog>($"{nameof(ProblemCatalog)}_{problemCatalog.Id}");
+                
                 await dbContext.SaveChangesAsync(cancellationToken);
             }
 

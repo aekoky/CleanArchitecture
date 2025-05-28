@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { IProblemDto, IProblemCatalogDto, IProblemCategoryDto, IProblemsDto, ProblemDto } from 'app/web-api-client';
+import { IProblemDto, IProblemCatalogDto, IProblemCategoryDto, IProblemsDto } from 'app/web-api-client';
 
 //Problem Actions
 

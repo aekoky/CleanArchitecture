@@ -1,6 +1,7 @@
 ﻿using CleanArchitecture.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
+using CleanArchitecture.Application.Application.Problems.Events;
 
 namespace CleanArchitecture.Application.Application.Problems.Commands.DeleteProblems;
 
@@ -18,7 +19,8 @@ public class DeleteProblemsCommandHandler(IApplicationDbContext dbContext) : IRe
                 var problems = await dbContext.Problems
                     .Where(problem => request.Ids.Contains(problem.Id))
                     .ToListAsync(cancellationToken);
-
+                if (problems.Count != 0)
+                    problems[0]?.AddDomainEvent(new ProblemsUpdatedEvent());
                 dbContext.Problems.RemoveRange(problems);
                 await dbContext.SaveChangesAsync(cancellationToken);
             }

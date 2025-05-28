@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Enums;
 using MediatR;
+using CleanArchitecture.Application.Application.Problems.Events;
 
 namespace CleanArchitecture.Application.Application.Problems.Commands.UpdateProblem;
 
@@ -22,13 +23,14 @@ public class UpdateProblemCommandHandler(IApplicationDbContext dbContext) : IReq
 {
     public async Task Handle(UpdateProblemCommand request, CancellationToken cancellationToken)
     {
-        var problemEntity = await dbContext.Problems
+        var problem = await dbContext.Problems
             .SingleOrDefaultAsync(problem => problem.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Problem), request.Id);
+        problem.AddDomainEvent(new ProblemsUpdatedEvent());
 
-        problemEntity.Name = request.Name ?? problemEntity.Name;
-        problemEntity.Description = request.Description;
-        problemEntity.ProblemCategoryId = request.ProblemCategoryId;
+        problem.Name = request.Name ?? problem.Name;
+        problem.Description = request.Description;
+        problem.ProblemCategoryId = request.ProblemCategoryId;
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

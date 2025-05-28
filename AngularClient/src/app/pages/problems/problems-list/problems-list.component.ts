@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject, LOCALE_ID } from '@angular/core';
 import { ColumnMode, NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
 import { ProblemDto, } from 'app/web-api-client';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -58,8 +58,10 @@ export class ProblemsListComponent {
     private readonly _dialogService: DialogService,
     public problemService: ProblemService,
     public treeService: TreeService,
-    private readonly _store: Store
+    private readonly _store: Store,
+    @Inject(LOCALE_ID) public locale: string
   ) {
+    console.log(locale);
     const filterKeyword$ = this.filtersForm.controls.keyword.valueChanges.pipe(
       startWith(this.filtersForm.controls.keyword.value),
       debounceTime(250),
@@ -111,7 +113,7 @@ export class ProblemsListComponent {
     if (selectedProblemsIds?.length)
       this.problemService.deleteProblems(selectedProblemsIds).subscribe(() => this._store.dispatch(deleteProblems({ ids: selectedProblemsIds })));
   }
-  
+
   onSelect({ selected }) {
     this.selectedProblems.splice(0, this.selectedProblems.length);
     this.selectedProblems.push(...selected);
