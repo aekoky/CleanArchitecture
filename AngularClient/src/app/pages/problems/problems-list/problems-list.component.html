@@ -13,12 +13,12 @@
             <div class="flex">
                 <button (click)="openProblemDialog()" mat-button>
                     <mat-icon>add_circle</mat-icon>
-                    <span i18n>Ajouter</span>
+                    <span i18n>Add</span>
                 </button>
                 @if(selectedProblems?.length){
                 <button (click)="deleteProblems()" mat-button>
                     <mat-icon>delete</mat-icon>
-                    <span i18n>Supprimer</span>
+                    <span i18n>Delete</span>
                 </button>
                 }
             </div>
@@ -89,7 +89,7 @@
 
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-problem="problem">
-        <button (click)="openProblemDialog(problem)" mat-menu-item i18n>Modifier</button>
-        <button (click)="deleteProblem(problem?.id)" mat-menu-item i18n>Supprimer</button>
+        <button (click)="openProblemDialog(problem)" mat-menu-item i18n>Edit</button>
+        <button (click)="deleteProblem(problem?.id)" mat-menu-item i18n>Delete</button>
     </ng-template>
 </mat-menu>

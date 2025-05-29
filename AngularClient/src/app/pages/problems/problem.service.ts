@@ -26,7 +26,7 @@ export class ProblemService extends CacheService<ProblemDto> {
                     {
                         next: () => {
                             this.removeCache(problemId);
-                            this._toastService.openToast('Le problème a été modifié', ToastType.Success, 3000);
+                            this._toastService.openToast($localize`The issue has been changed`, ToastType.Success, 3000);
                             this._store.dispatch(updateProblem(problem));
 
                         },
@@ -38,7 +38,7 @@ export class ProblemService extends CacheService<ProblemDto> {
             return this._problemsClient.create(CreateProblemCommand.fromJS(problem)).pipe(tap(
                 {
                     next: (id) => {
-                        this._toastService.openToast('Le problème a été créé', ToastType.Success, 3000);
+                        this._toastService.openToast($localize`The issue has been created`, ToastType.Success, 3000);
                         problem.id = id;
                         this._store.dispatch(createProblem(problem));
                     },
@@ -59,7 +59,7 @@ export class ProblemService extends CacheService<ProblemDto> {
             tap({
                 next: () => {
                     this.removeCache(id);
-                    this._toastService.openToast('Le problème est supprimé avec succès', ToastType.Success, 3000);
+                    this._toastService.openToast($localize`The issue has been removed successfully`, ToastType.Success, 3000);
                     this._store.dispatch(deleteProblem({ id }));
                 },
                 error: error => this._toastService.openToast(error, ToastType.Error),
@@ -74,7 +74,7 @@ export class ProblemService extends CacheService<ProblemDto> {
                     next: () => {
                         for (const id of ids)
                             this.removeCache(id);
-                        this._toastService.openToast('Les problèmes sont supprimés avec succès', ToastType.Success, 3000)
+                        this._toastService.openToast($localize`The issues are successfully removed`, ToastType.Success, 3000)
                         this._store.dispatch(deleteProblems({ ids }));
                     },
                     error: error => this._toastService.openToast(error, ToastType.Error),

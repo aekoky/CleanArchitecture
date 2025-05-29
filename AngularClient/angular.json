@@ -18,7 +18,7 @@
         "locales": {
           "fr": {
             "translation": "src/i18n/messages.fr.xlf",
-            "subPath": ""
+            "subPath": "fr"
           }
         }
       },

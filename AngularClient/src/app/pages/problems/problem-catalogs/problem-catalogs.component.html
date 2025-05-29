@@ -45,19 +45,18 @@
 
     </div>
 
-    <mat-menu #contextMenu="matMenu">
-        <ng-template matMenuContent let-node="node">
-            @switch(node.nodeLevel){
-            @case(NodeLevel.Category){
-            <button (click)="openNode(NodeLevel.Node, undefined, node.id)" mat-menu-item i18n>Ajouter</button>
-            }
-            @case(NodeLevel.Catalog){
-            <button (click)="openNode(NodeLevel.Category, undefined, node.id)" mat-menu-item i18n>Ajouter sous
-                catégorie</button>
-            }
-            }
-            <button (click)="openNode(node.nodeLevel, node)" mat-menu-item i18n>Modifier</button>
-            <button (click)="deleteNode(node.id, node.nodeLevel)" mat-menu-item i18n>Supprimer</button>
-        </ng-template>
-    </mat-menu>
 </div>
+<mat-menu #contextMenu="matMenu">
+    <ng-template matMenuContent let-node="node">
+        @switch(node.nodeLevel){
+        @case(NodeLevel.Category){
+        <button (click)="openNode(NodeLevel.Node, undefined, node.id)" mat-menu-item i18n>Add issue</button>
+        }
+        @case(NodeLevel.Catalog){
+        <button (click)="openNode(NodeLevel.Category, undefined, node.id)" mat-menu-item i18n>Add subcategory</button>
+        }
+        }
+        <button (click)="openNode(node.nodeLevel, node)" mat-menu-item i18n>Edit</button>
+        <button (click)="deleteNode(node.id, node.nodeLevel)" mat-menu-item i18n>Delete</button>
+    </ng-template>
+</mat-menu>

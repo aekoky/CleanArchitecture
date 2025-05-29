@@ -2,6 +2,27 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="3116073152171837705" datatype="html">
+        <source>The problem category has been changed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-catalog.service.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1231784917735266254" datatype="html">
+        <source>The problem category has been created</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-catalog.service.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="815989245914989620" datatype="html">
+        <source>The problem category is successfully removed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-catalog.service.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8393682212209208005" datatype="html">
         <source>Update the category of problem</source>
         <context-group purpose="location">
@@ -98,26 +119,22 @@
           <context context-type="linenumber">43,44</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="70397346439942337" datatype="html">
-        <source>Ajouter</source>
+      <trans-unit id="5381492657064287336" datatype="html">
+        <source>Add issue</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-catalogs/problem-catalogs.component.html</context>
-          <context context-type="linenumber">52,53</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/problems/problems-list/problems-list.component.html</context>
-          <context context-type="linenumber">16,17</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3537026218352271759" datatype="html">
-        <source>Ajouter sous catégorie</source>
+      <trans-unit id="6628310876158449303" datatype="html">
+        <source>Add subcategory</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-catalogs/problem-catalogs.component.html</context>
-          <context context-type="linenumber">55,56</context>
+          <context context-type="linenumber">56,57</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1785052497460968940" datatype="html">
-        <source>Modifier</source>
+      <trans-unit id="7585826646011739428" datatype="html">
+        <source>Edit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-catalogs/problem-catalogs.component.html</context>
           <context context-type="linenumber">59,60</context>
@@ -127,8 +144,8 @@
           <context context-type="linenumber">92,93</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="180879386399550529" datatype="html">
-        <source>Supprimer</source>
+      <trans-unit id="7022070615528435141" datatype="html">
+        <source>Delete</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-catalogs/problem-catalogs.component.html</context>
           <context context-type="linenumber">60,61</context>
@@ -142,22 +159,71 @@
           <context context-type="linenumber">93,94</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="568100074883304903" datatype="html">
-        <source>Update the subcategory of the problem</source>
+      <trans-unit id="344536690768440365" datatype="html">
+        <source>The subcategory has been changed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-category.service.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8933667694674280074" datatype="html">
+        <source>The subcategory has been created</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-category.service.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2917056855591081663" datatype="html">
+        <source>The subcategory is removed successfully</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem-category.service.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="458815453695872840" datatype="html">
+        <source>Update the subcategory of problem</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-category/problem-category.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2389003600751233631" datatype="html">
-        <source>Nouvel sous catégorie du problème</source>
+      <trans-unit id="5297441114595076789" datatype="html">
+        <source>New subcategory of problem</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem-category/problem-category.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3437507648488199207" datatype="html">
-        <source>Modifier le problème</source>
+      <trans-unit id="2422648313605655555" datatype="html">
+        <source>The issue has been changed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem.service.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="821799797970697669" datatype="html">
+        <source>The issue has been created</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem.service.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4265966988767205779" datatype="html">
+        <source>The issue has been removed successfully</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem.service.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5107443041489693313" datatype="html">
+        <source>The issues are successfully removed</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problem.service.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9002825794669844923" datatype="html">
+        <source>Update the issue</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problem/problem.component.html</context>
           <context context-type="linenumber">5,6</context>
@@ -175,6 +241,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/problems/problems-list/problems-list.component.html</context>
           <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3249513483374643425" datatype="html">
+        <source>Add</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/problems/problems-list/problems-list.component.html</context>
+          <context context-type="linenumber">16,17</context>
         </context-group>
       </trans-unit>
     </body>

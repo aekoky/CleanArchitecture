@@ -25,7 +25,7 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
                 tap({
                     next: () => {
                         this.removeCache(problemCategoryId);
-                        this._toastService.openToast("Le problème sous catégorie a été modifiée", ToastType.Success, 3000);
+                        this._toastService.openToast($localize`The subcategory has been changed`, ToastType.Success, 3000);
                         this._store.dispatch(updateProblemCategory(problemCategory));
                     },
                     error: error => this._toastService.openToast(error, ToastType.Error),
@@ -34,7 +34,7 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
         else
             return this._problemCategoriesClient.create(CreateProblemCategoryCommand.fromJS(problemCategory)).pipe(tap({
                 next: (id) => {
-                    this._toastService.openToast("Le problème sous catégorie a été créée", ToastType.Success, 3000);
+                    this._toastService.openToast($localize`The subcategory has been created`, ToastType.Success, 3000);
                     problemCategory.id = id;
                     this._store.dispatch(createProblemCategory(problemCategory));
                 },
@@ -51,7 +51,7 @@ export class ProblemCategoryService extends CacheService<ProblemCategoryDto> {
             tap({
                 next: () => {
                     this.removeCache(id);
-                    this._toastService.openToast("Le problème sous catégorie est supprimée avec succès", ToastType.Success, 3000)
+                    this._toastService.openToast($localize`The subcategory is removed successfully`, ToastType.Success, 3000)
                     this._store.dispatch(deleteProblemCategory({ id }));
                 },
                 error: error => this._toastService.openToast(error, ToastType.Error),
