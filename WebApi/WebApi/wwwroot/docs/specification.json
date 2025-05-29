@@ -592,9 +592,14 @@
       "DeleteProblemCatalogsCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "ids"
+        ],
         "properties": {
           "ids": {
             "type": "array",
+            "minLength": 1,
+            "nullable": false,
             "items": {
               "type": "integer",
               "format": "int32"
@@ -661,9 +666,14 @@
       "DeleteProblemCategoriesCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "ids"
+        ],
         "properties": {
           "ids": {
             "type": "array",
+            "minLength": 1,
+            "nullable": false,
             "items": {
               "type": "integer",
               "format": "int32"
@@ -827,9 +837,14 @@
       "DeleteProblemsCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "ids"
+        ],
         "properties": {
           "ids": {
             "type": "array",
+            "minLength": 1,
+            "nullable": false,
             "items": {
               "type": "integer",
               "format": "int32"

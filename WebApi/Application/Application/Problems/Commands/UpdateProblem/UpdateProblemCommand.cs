@@ -1,10 +1,11 @@
-﻿using CleanArchitecture.Application.Common.Exceptions;
+﻿using CleanArchitecture.Application.Application.Problems.Events;
+using CleanArchitecture.Application.Common.Exceptions;
 using CleanArchitecture.Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using CleanArchitecture.Application.Common;
 using CleanArchitecture.Domain.Entities;
-using CleanArchitecture.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using MediatR;
-using CleanArchitecture.Application.Application.Problems.Events;
 
 namespace CleanArchitecture.Application.Application.Problems.Commands.UpdateProblem;
 
@@ -19,7 +20,7 @@ public record UpdateProblemCommand : IRequest
     public int? ProblemCategoryId { get; set; }
 }
 
-public class UpdateProblemCommandHandler(IApplicationDbContext dbContext) : IRequestHandler<UpdateProblemCommand>
+public class UpdateProblemCommandHandler(IApplicationDbContext dbContext, IDistributedCache cache) : IRequestHandler<UpdateProblemCommand>
 {
     public async Task Handle(UpdateProblemCommand request, CancellationToken cancellationToken)
     {
@@ -33,5 +34,6 @@ public class UpdateProblemCommandHandler(IApplicationDbContext dbContext) : IReq
         problem.ProblemCategoryId = request.ProblemCategoryId;
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        await cache.SetAutoJsonAsync($"{nameof(Problem)}_{problem.Id}", problem, cancellationToken: cancellationToken);
     }
 }

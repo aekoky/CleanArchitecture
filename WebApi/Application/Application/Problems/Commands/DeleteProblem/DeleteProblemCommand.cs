@@ -16,20 +16,9 @@ public class DeleteProblemCommandHandler(IApplicationDbContext dbContext) : IReq
         var problem = await dbContext.Problems
             .SingleOrDefaultAsync(problem => problem.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Problem), request.Id);
-        problem.AddDomainEvent(new ProblemsUpdatedEvent());
-        var transaction = await dbContext.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            dbContext.Problems.Remove(problem);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(CancellationToken.None);
-            throw;
-        }
+        dbContext.Problems.Remove(problem);
+        problem.AddDomainEvent(new ProblemsUpdatedEvent([$"{nameof(Problem)}_{problem.Id}"]));
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
 }

@@ -28,7 +28,8 @@ public class CreateProblemCatalogCommandHandler(IApplicationDbContext dbContext,
         dbContext.ProblemCatalogs.Add(problemCatalog);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        cache.SetAutoJson($"{nameof(ProblemCatalog)}_{problemCatalog.Id}", problemCatalog);
+        await cache.SetAutoJsonAsync($"{nameof(ProblemCatalog)}_{problemCatalog.Id}", problemCatalog, cancellationToken: cancellationToken);
+
         return problemCatalog.Id;
     }
 }

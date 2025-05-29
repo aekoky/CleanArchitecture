@@ -32,7 +32,7 @@ public class CreateProblemCommandHandler(IApplicationDbContext dbContext, IDistr
         dbContext.Problems.Add(problem);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        cache.SetAutoJson($"{nameof(Problem)}_{problem.Id}", problem);
+        await cache.SetAutoJsonAsync($"{nameof(Problem)}_{problem.Id}", problem, cancellationToken: cancellationToken);
 
         return problem.Id;
     }

@@ -12,14 +12,14 @@ namespace CleanArchitecture.Application.Application.ProblemCategories.Commands.D
 
 public record DeleteProblemCategoryCommand(int Id) : IRequest;
 
-public class DeleteProblemCategoryCommandHandler(IApplicationDbContext dbContext, IDistributedCache cache) : IRequestHandler<DeleteProblemCategoryCommand>
+public class DeleteProblemCategoryCommandHandler(IApplicationDbContext dbContext) : IRequestHandler<DeleteProblemCategoryCommand>
 {
     public async Task Handle(DeleteProblemCategoryCommand request, CancellationToken cancellationToken)
     {
+        List<string> cacheKeys = [];
         var problemCategory = await dbContext.ProblemCategories
             .SingleOrDefaultAsync(problemCategory => problemCategory.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(ProblemCategory), request.Id);
-        problemCategory.AddDomainEvent(new ProblemsUpdatedEvent());
         var transaction = await dbContext.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -29,16 +29,16 @@ public class DeleteProblemCategoryCommandHandler(IApplicationDbContext dbContext
 
             dbContext.Problems.RemoveRange(problems);
             foreach (var problem in problems)
-                cache.SetAutoJson<Problem>($"{nameof(Problem)}_{problem.Id}");
+                cacheKeys.Add($"{nameof(Problem)}_{problem.Id}");
             if (problems.Count != 0)
                 problems[0]?.AddDomainEvent(new ProblemsUpdatedEvent());
             await dbContext.SaveChangesAsync(cancellationToken);
 
             dbContext.ProblemCategories.Remove(problemCategory);
-            cache.SetAutoJson<ProblemCategory>($"{nameof(ProblemCategory)}_{problemCategory.Id}");
+            cacheKeys.Add($"{nameof(ProblemCategory)}_{problemCategory.Id}");
+            problemCategory.AddDomainEvent(new ProblemsUpdatedEvent([.. cacheKeys]));
 
             await dbContext.SaveChangesAsync(cancellationToken);
-
             await transaction.CommitAsync(cancellationToken);
         }
         catch (Exception)

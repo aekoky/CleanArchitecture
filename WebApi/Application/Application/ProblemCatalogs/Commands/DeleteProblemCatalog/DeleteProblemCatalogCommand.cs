@@ -1,24 +1,22 @@
-﻿using MediatR;
+﻿using CleanArchitecture.Application.Application.Problems.Events;
 using CleanArchitecture.Application.Common.Exceptions;
 using CleanArchitecture.Application.Common.Interfaces;
 using CleanArchitecture.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using CleanArchitecture.Application.Common;
-using CleanArchitecture.Application.Application.Problems.Events;
+using MediatR;
 
 namespace CleanArchitecture.Application.Application.ProblemCatalogs.Commands.DeleteProblemCatalog;
 
 public record DeleteProblemCatalogCommand(int Id) : IRequest;
 
-public class DeleteProblemCatalogCommandHandler(IApplicationDbContext dbContext, IDistributedCache cache) : IRequestHandler<DeleteProblemCatalogCommand>
+public class DeleteProblemCatalogCommandHandler(IApplicationDbContext dbContext) : IRequestHandler<DeleteProblemCatalogCommand>
 {
     public async Task Handle(DeleteProblemCatalogCommand request, CancellationToken cancellationToken)
     {
+        List<string> cacheKeys = [];
         var problemCatalog = await dbContext.ProblemCatalogs
             .SingleOrDefaultAsync(problemCatalog => problemCatalog.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(ProblemCatalog), request.Id);
-        problemCatalog.AddDomainEvent(new ProblemsUpdatedEvent());
         var transaction = await dbContext.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -31,18 +29,19 @@ public class DeleteProblemCatalogCommandHandler(IApplicationDbContext dbContext,
 
                 dbContext.Problems.RemoveRange(problems);
                 foreach (var problem in problems)
-                    cache.SetAutoJson<Problem>($"{nameof(Problem)}_{problem.Id}");
+                    cacheKeys.Add($"{nameof(Problem)}_{problem.Id}");
 
                 await dbContext.SaveChangesAsync(cancellationToken);
             }
             dbContext.ProblemCategories.RemoveRange(problemCategories);
             foreach (var problemCategory in problemCategories)
-                cache.SetAutoJson<ProblemCategory>($"{nameof(ProblemCategory)}_{problemCategory.Id}");
+                cacheKeys.Add($"{nameof(ProblemCategory)}_{problemCategory.Id}");
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
             dbContext.ProblemCatalogs.Remove(problemCatalog);
-            cache.SetAutoJson<ProblemCatalog>($"{nameof(ProblemCatalog)}_{problemCatalog.Id}");
+            cacheKeys.Add($"{nameof(ProblemCatalog)}_{problemCatalog.Id}");
+            problemCatalog.AddDomainEvent(new ProblemsUpdatedEvent([.. cacheKeys]));
 
             await dbContext.SaveChangesAsync(cancellationToken);
 

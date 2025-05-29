@@ -34,6 +34,6 @@ public class UpdateProblemCategoryCommandHandler(IApplicationDbContext dbContext
         problemCategory.ProblemCatalogId = request.ProblemCatalogId;
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        cache.SetAutoJson($"{nameof(ProblemCategory)}_{problemCategory.Id}", problemCategory);
+        await cache.SetAutoJsonAsync($"{nameof(ProblemCategory)}_{problemCategory.Id}", problemCategory, cancellationToken: cancellationToken);
     }
 }

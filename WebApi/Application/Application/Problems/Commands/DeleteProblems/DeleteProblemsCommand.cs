@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using CleanArchitecture.Application.Application.Problems.Events;
+using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Application.Application.Problems.Commands.DeleteProblems;
 
@@ -11,26 +12,15 @@ public class DeleteProblemsCommandHandler(IApplicationDbContext dbContext) : IRe
 {
     public async Task Handle(DeleteProblemsCommand request, CancellationToken cancellationToken)
     {
-        var transaction = await dbContext.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            if (request.Ids.Length != 0)
-            {
-                var problems = await dbContext.Problems
-                    .Where(problem => request.Ids.Contains(problem.Id))
-                    .ToListAsync(cancellationToken);
-                if (problems.Count != 0)
-                    problems[0]?.AddDomainEvent(new ProblemsUpdatedEvent());
-                dbContext.Problems.RemoveRange(problems);
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
+        var problems = await dbContext.Problems
+            .Where(problem => request.Ids.Contains(problem.Id))
+            .ToListAsync(cancellationToken);
+        if (problems.Count == 0)
+            return;
 
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(CancellationToken.None);
-            throw;
-        }
+        string[] cacheKeys = problems.Select(problem => $"{nameof(Problem)}_{problem.Id}").ToArray();
+        problems[0].AddDomainEvent(new ProblemsUpdatedEvent(cacheKeys));
+        dbContext.Problems.RemoveRange(problems);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

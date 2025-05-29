@@ -1,9 +1,9 @@
 ﻿using CleanArchitecture.Application.Application.Problems.Events;
-using CleanArchitecture.Application.Common;
 using CleanArchitecture.Application.Common.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
+using CleanArchitecture.Application.Common;
 using CleanArchitecture.Domain.Entities;
 using MediatR;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace CleanArchitecture.Application.Application.ProblemCategories.Commands.CreateProblemCategory;
 
@@ -30,7 +30,7 @@ public class CreateProblemCategoryCommandHandler(IApplicationDbContext dbContext
         dbContext.ProblemCategories.Add(problemCategory);
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        cache.SetAutoJson($"{nameof(ProblemCategory)}_{problemCategory.Id}", problemCategory);
+        await cache.SetAutoJsonAsync($"{nameof(ProblemCategory)}_{problemCategory.Id}", problemCategory, cancellationToken: cancellationToken);
 
         return problemCategory.Id;
     }

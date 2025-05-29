@@ -1,11 +1,11 @@
-﻿using CleanArchitecture.Application.Common.Exceptions;
+﻿using CleanArchitecture.Application.Application.Problems.Events;
+using CleanArchitecture.Application.Common.Exceptions;
 using CleanArchitecture.Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using CleanArchitecture.Domain.Entities;
-using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using CleanArchitecture.Application.Common;
-using CleanArchitecture.Application.Application.Problems.Events;
+using CleanArchitecture.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using MediatR;
 
 namespace CleanArchitecture.Application.Application.ProblemCatalogs.Commands.UpdateProblemCatalog;
 
@@ -31,6 +31,6 @@ public class UpdateProblemCatalogCommandHandler(IApplicationDbContext dbContext,
         problemCatalog.Description = request.Description;
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        cache.SetAutoJson($"{nameof(ProblemCatalog)}_{problemCatalog.Id}", problemCatalog);
+        await cache.SetAutoJsonAsync($"{nameof(ProblemCatalog)}_{problemCatalog.Id}", problemCatalog, cancellationToken: cancellationToken);
     }
 }

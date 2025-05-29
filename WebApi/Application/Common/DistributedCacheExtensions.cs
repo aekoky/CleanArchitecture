@@ -15,50 +15,13 @@ public static class DistributedCacheExtensions
     /// <param name="cache">Cache</param>
     /// <param name="key">Key</param>
     /// <param name="value">Value</param>
-    public static void SetAutoJson<TValue>(this IDistributedCache cache, string key, TValue? value = null)
-        where TValue : class
-    {
-        ArgumentNullException.ThrowIfNull(cache);
-
-        if (value == null)
-            cache.Remove(key);
-        else if (value is string s)
-            cache.Set(key, Encoding.UTF8.GetBytes(s));
-        else if (value is byte[] b)
-            cache.Set(key, b);
-        else
-            cache.SetString(key, JsonSerializer.Serialize(value));
-
-    }
-
-    /// <summary>
-    /// Sets a value in the cache as byte[], string, or using JSON serialization depending on type of TValue
-    /// </summary>
-    /// <param name="cache">Cache</param>
-    /// <param name="key">Key</param>
-    /// <param name="value">Value</param>
     /// <param name="expiration">Expiration</param>
-    public static void SetAutoJson<TValue>(this IDistributedCache cache, string key, TValue? value, TimeSpan expiration)
+    public static void SetAutoJson<TValue>(this IDistributedCache cache, string key, TValue value, TimeSpan? expiration = default)
         where TValue : class
     {
-        ArgumentNullException.ThrowIfNull(cache);
-
-        if (value == null || expiration < TimeSpan.Zero)
-        {
-            cache.Remove(key);
-            return;
-        }
-
-        if (expiration == TimeSpan.Zero)
-        {
-            cache.SetAutoJson(key, value);
-            return;
-        }
-
-        var options = new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = expiration
-        };
+        var options = new DistributedCacheEntryOptions();
+        if (expiration.HasValue && expiration.Value > TimeSpan.Zero)
+            options.SetAbsoluteExpiration(expiration.Value);
 
         if (value is string s)
             cache.Set(key, Encoding.UTF8.GetBytes(s), options);
@@ -66,6 +29,23 @@ public static class DistributedCacheExtensions
             cache.Set(key, b, options);
         else
             cache.SetString(key, JsonSerializer.Serialize(value), options);
+    }
+
+    public static async Task SetAutoJsonAsync<TValue>(this IDistributedCache cache, string key, TValue value, TimeSpan? expiration = default, CancellationToken cancellationToken = default)
+    where TValue : class
+    {
+        ArgumentNullException.ThrowIfNull(cache);
+
+        var options = new DistributedCacheEntryOptions();
+        if (expiration.HasValue && expiration.Value > TimeSpan.Zero)
+            options.SetAbsoluteExpiration(expiration.Value);
+
+        if (value is string stringValue)
+            await cache.SetAsync(key, Encoding.UTF8.GetBytes(stringValue), options, cancellationToken);
+        else if (value is byte[] bytesValue)
+            await cache.SetAsync(key, bytesValue, options, cancellationToken);
+        else
+            await cache.SetStringAsync(key, JsonSerializer.Serialize(value), options, cancellationToken);
     }
 
     /// <summary>
